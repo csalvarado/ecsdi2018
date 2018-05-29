@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1527273042749" name="http://mem0r1es.github.io/ontology/activities" uri="loc2act-activities-final.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1527273042749" name="http://mem0r1es.github.io/ontology/places" uri="google_places.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1527273042749" name="http://users.ecs.soton.ac.uk/cd8e10/ontology/" uri="airtravelbookingontology.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1527273042749" name="http://www.ict-omelette.eu/" uri="limon.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1527273042749" name="http://www.nuin.org/ontology/fipa/acl" uri="fipa-acl.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1527273042749" name="http://www.opengis.net/ont/geosparql" uri="geosparql_vocab_all.rdf"/>
+        <uri id="Automatically generated entry, Timestamp=1527273042749" name="http://www.semanticweb.org/directory-service-ontology#" uri="DirectoryServiceOntology.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1527273042749" name="http://www.w3.org/2002/07/owl" uri="wgs84.owl"/>
+    </group>
+</catalog>
