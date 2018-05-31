@@ -19,7 +19,7 @@ from multiprocessing import Process, Queue
 import socket
 
 from rdflib import Namespace, Graph
-from flask import Flask
+from flask import Flask, request
 
 from AgentUtil.FlaskServer import shutdown_server
 from AgentUtil.Agent import Agent
@@ -67,6 +67,19 @@ def comunicacion():
     global mss_cnt
     pass
 
+@app.route("/Busqueda")
+def prueba():
+    """
+    Entrypoint de comunicacion
+    """
+    dsgraph.parse("../Productos/product.owl", format ="json")
+    x = int(request.args['x'])
+    cola1.put(x)
+    global dsgraph
+    global mss_cnt
+    return "Buscando"
+    pass
+
 
 @app.route("/Stop")
 def stop():
@@ -92,8 +105,11 @@ def agentbehavior1(cola):
     """
     Un comportamiento del agente
 
-    :return:
     """
+    a = cola.get()
+    a += a
+
+    print(a)
     pass
 
 
