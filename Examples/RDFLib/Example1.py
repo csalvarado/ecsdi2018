@@ -21,10 +21,14 @@ g = Graph()
 n = Namespace('http://ejemplo.org/')
 
 p1 = n.persona1
+p2 = n.persona2
+p3 = n.persona3
 v = Literal(22)
-
+v2 = Literal(24)
+v3 = Literal(22)
 g.add((p1, FOAF.age, v))
-
+g.add((p2, FOAF.age, v2))
+g.add((p3, FOAF.age, v3))
 # g.serialize('a.rdf')
 
 for a, b, c in g:
