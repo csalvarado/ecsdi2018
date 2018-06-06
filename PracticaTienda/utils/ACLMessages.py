@@ -8,17 +8,16 @@ Created on 08/02/2014
 
 @author: javier
 """
-from imaplib import Literal
+import requests
+from rdflib import Graph, Literal
+from rdflib.namespace import FOAF, RDF, Namespace
 
 from PracticaTienda.utils.Agent import Agent
+from PracticaTienda.utils.OntoNamespaces import DSO, ACL
 
 __author__ = 'javier'
 
-from rdflib import Graph
-import requests
-from rdflib.namespace import RDF, FOAF, Namespace
 
-from PracticaTienda.utils.OntoNamespaces import ACL, DSO
 
 agn = Namespace("http://www.agentes.org#")
 
@@ -145,14 +144,17 @@ def get_bag_agent_info(type_, directory_agent, sender, msgcnt):
 
 def register_agent(origin_agent, directory_agent, type_, msg_cnt):
     gmess = Graph()
+
     # Construimos el mensaje de registro
     gmess.bind('foaf', FOAF)
     gmess.bind('dso', DSO)
+    name = Literal(origin_agent.name)
+    address = Literal(origin_agent.address)
     reg_obj = agn[origin_agent.name + '-Register']
     gmess.add((reg_obj, RDF.type, DSO.Register))
     gmess.add((reg_obj, DSO.Uri, origin_agent.uri))
-    gmess.add((reg_obj, FOAF.Name, Literal(origin_agent.name)))
-    gmess.add((reg_obj, DSO.Address, Literal(origin_agent.address)))
+    gmess.add((reg_obj, FOAF.name, name))
+    gmess.add((reg_obj, DSO.Address, address))
     gmess.add((reg_obj, DSO.AgentType, type_))
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(

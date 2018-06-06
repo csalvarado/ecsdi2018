@@ -22,10 +22,11 @@ from imaplib import Literal
 from multiprocessing import Process, Queue
 import socket
 
+
 from rdflib import Namespace, Graph, logger, RDF, XSD
 from flask import Flask, request
 
-from PracticaTienda.utils.ACLMessages import get_message_properties, build_message
+from PracticaTienda.utils.ACLMessages import get_message_properties, build_message, register_agent
 from PracticaTienda.utils.FlaskServer import shutdown_server
 from PracticaTienda.utils.Agent import Agent
 from PracticaTienda.utils.OntoNamespaces import ACL
@@ -43,13 +44,31 @@ parser.add_argument('--dport', type=int, help="Puerto de comunicacion del agente
 args = parser.parse_args()
 
 # Configuration stuff
-hostname = socket.gethostname()
-port = 9002
+if args.port is None:
+    port = 9081
+else:
+    port = args.port
+
+if args.open is None:
+    hostname = '0.0.0.0'
+else:
+    hostname = socket.gethostname()
+
+if args.dport is None:
+    dport = 9000
+else:
+    dport = args.dport
+
+if args.dhost is None:
+    dhostname = socket.gethostname()
+else:
+    dhostname = args.dhost
+
 
 agn = Namespace("http://www.agentes.org#")
 
 # Contador de mensajes
-mss_cnt = 0
+messages_cnt = 0
 
 # Datos del Agente
 
@@ -77,6 +96,20 @@ def get_count():
     global messages_cnt
     messages_cnt += 1
     return messages_cnt
+
+def register_message():
+    """
+    Envia un mensaje de registro al servicio de registro
+    usando una performativa Request y una accion Register del
+    servicio de directorio
+    :param gmess:
+    :return:
+    """
+
+    logger.info('Nos registramos')
+
+    gr = register_agent(AgenteBuscador, DirectoryAgent, AgenteBuscador.uri, get_count())
+    return gr
 
 
 @app.route("/comm")
@@ -119,7 +152,7 @@ def comunicacion():
                     elif gm.value(subject=restriccion, predicate=RDF.type) == ECSDI.Restriccion_modelo:
                         modelo = gm.value(subject=restriccion, predicate=ECSDI.Modelo)
                         logger.info('MODELO: ' + modelo)
-                        restricciones_vec['model'] = modelo
+                        restricciones_vec['modelo'] = modelo
                     elif gm.value(subject=restriccion, predicate=RDF.type) == ECSDI.Rango_precio:
                         preu_max = gm.value(subject=restriccion, predicate=ECSDI.Precio_max)
                         preu_min = gm.value(subject=restriccion, predicate=ECSDI.Precio_min)
@@ -220,17 +253,17 @@ def tidyup():
     pass
 
 
-def agentbehavior1(cola):
-    """
-    Un comportamiento del agente
+def agentbehavior1():
 
-    """
+    gr = register_message()
+
     pass
+
 
 
 if __name__ == '__main__':
     # Ponemos en marcha los behaviors
-    ab1 = Process(target=agentbehavior1, args=(cola1,))
+    ab1 = Process(target=agentbehavior1, args=())
     ab1.start()
 
     # Ponemos en marcha el servidor

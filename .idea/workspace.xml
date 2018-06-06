@@ -7,9 +7,9 @@
     <list default="true" id="c1a3d64d-1344-423b-8102-9bcd86a25e2d" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py" beforeDir="false" afterPath="$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py" beforeDir="false" afterPath="$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PracticaTienda/AgentesTienda/UserClient.py" beforeDir="false" afterPath="$PROJECT_DIR$/PracticaTienda/AgentesTienda/UserClient.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PracticaTienda/Datos/product.rdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PracticaTienda/templates/busqueda.html" beforeDir="false" afterPath="$PROJECT_DIR$/PracticaTienda/templates/busqueda.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py" beforeDir="false" afterPath="$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -19,19 +19,31 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/ECSDI2018$SimpleDirectoryService.coverage" NAME="SimpleDirectoryService Coverage Results" MODIFIED="1528311130186" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PracticaTienda/AgentesTienda" />
-    <SUITE FILE_PATH="coverage/ECSDI2018$AgenteBuscador.coverage" NAME="AgenteBuscador Coverage Results" MODIFIED="1528311057273" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PracticaTienda/AgentesTienda" />
-    <SUITE FILE_PATH="coverage/ECSDI2018$UserClient.coverage" NAME="UserClient Coverage Results" MODIFIED="1528311265354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PracticaTienda/AgentesTienda" />
+    <SUITE FILE_PATH="coverage/ECSDI2018$SimpleDirectoryService.coverage" NAME="SimpleDirectoryService Coverage Results" MODIFIED="1528322673235" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PracticaTienda/AgentesTienda" />
+    <SUITE FILE_PATH="coverage/ECSDI2018$AgenteBuscador.coverage" NAME="AgenteBuscador Coverage Results" MODIFIED="1528324017128" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PracticaTienda/AgentesTienda" />
+    <SUITE FILE_PATH="coverage/ECSDI2018$UserClient.coverage" NAME="UserClient Coverage Results" MODIFIED="1528322687228" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PracticaTienda/AgentesTienda" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="AgenteBuscador.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="AgenteBuscador.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="43" lean-forward="true" selection-start-line="43" selection-end-line="43" />
+            <state relative-caret-position="182">
+              <caret line="110" selection-start-line="110" selection-end-line="110" />
               <folding>
                 <element signature="e#372#409#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ACLMessages.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="342">
+              <caret line="165" selection-start-line="165" selection-end-line="165" />
+              <folding>
+                <element signature="e#140#155#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -40,7 +52,7 @@
       <file leaf-file-name="UserClient.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/UserClient.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
+            <state relative-caret-position="-566">
               <caret line="153" selection-start-line="153" selection-end-line="153" />
               <folding>
                 <element signature="e#125#138#0" expanded="true" />
@@ -49,11 +61,16 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="OntologyNamespaces.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/OntologyNamespaces.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
       <file leaf-file-name="SimpleDirectoryService.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="132" column="68" selection-start-line="132" selection-start-column="59" selection-end-line="132" selection-end-column="68" />
+            <state relative-caret-position="148">
+              <caret line="97" selection-start-line="97" selection-end-line="97" />
               <folding>
                 <element signature="e#433#470#0" expanded="true" />
               </folding>
@@ -61,14 +78,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ACLMessages.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py">
+      <file leaf-file-name="namespace.py" pinned="false" current-in-tab="false">
+        <entry file="file://C:/Python27/Lib/site-packages/rdflib/namespace.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="184">
-              <caret line="103" column="90" selection-start-line="103" selection-start-column="75" selection-end-line="103" selection-end-column="90" />
-              <folding>
-                <element signature="e#140#167#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="155">
+              <caret line="238" column="44" selection-start-line="238" selection-start-column="18" selection-end-line="238" selection-end-column="44" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="graph.py" pinned="false" current-in-tab="false">
+        <entry file="file://C:/Python27/Lib/site-packages/rdflib/graph.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="148">
+              <caret line="394" selection-start-line="394" selection-end-line="394" />
             </state>
           </provider>
         </entry>
@@ -82,17 +105,23 @@
       </list>
     </option>
   </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>_sre.SRE_Pattern</find>
+      <find>messages_cnt</find>
+    </findStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py" />
-        <option value="$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py" />
         <option value="$PROJECT_DIR$/PracticaTienda/templates/busqueda.html" />
         <option value="$PROJECT_DIR$/PracticaTienda/AgentesTienda/UserClient.py" />
         <option value="$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py" />
+        <option value="$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py" />
+        <option value="$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py" />
       </list>
     </option>
   </component>
@@ -105,9 +134,9 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="-38" />
-    <option name="y" value="175" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="243" />
+    <option name="y" value="128" />
     <option name="width" value="1382" />
     <option name="height" value="915" />
   </component>
@@ -122,6 +151,17 @@
             <path>
               <item name="ECSDI2018" type="b2602c69:ProjectViewProjectNode" />
               <item name="ECSDI2018" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ECSDI2018" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ECSDI2018" type="462c0819:PsiDirectoryNode" />
+              <item name="Examples" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ECSDI2018" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ECSDI2018" type="462c0819:PsiDirectoryNode" />
+              <item name="Examples" type="462c0819:PsiDirectoryNode" />
+              <item name="AgentExamples" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ECSDI2018" type="b2602c69:ProjectViewProjectNode" />
@@ -184,7 +224,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.UserClient">
+  <component name="RunManager" selected="Python.AgenteBuscador">
     <configuration name="AgenteBuscador" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ecsdi2018" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -249,9 +289,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.AgenteBuscador" />
         <item itemvalue="Python.UserClient" />
         <item itemvalue="Python.SimpleDirectoryService" />
-        <item itemvalue="Python.AgenteBuscador" />
       </list>
     </recent_temporary>
   </component>
@@ -287,28 +327,34 @@
       <option name="project" value="LOCAL" />
       <updated>1528309137071</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Probando las busquedas">
+      <created>1528311779197</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1528311779197</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="580" y="107" width="1382" height="915" extended-state="0" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5014641" side_tool="true" visible="true" weight="0.465" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5021962" side_tool="true" weight="0.615" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49869224" weight="0.17918456" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4978038" weight="0.6143791" />
       <window_info anchor="bottom" id="Terminal" order="7" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2715959" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1977612" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49956408" weight="0.32939914" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.49853587" visible="true" weight="0.465" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.49853587" visible="true" weight="0.4640523" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -327,25 +373,12 @@
     <MESSAGE value="Pagina Principal y busqueda" />
     <MESSAGE value="Pagina busqueda" />
     <MESSAGE value="Acabado Agente directorio" />
-    <option name="LAST_COMMIT_MESSAGE" value="Acabado Agente directorio" />
+    <MESSAGE value="Probando las busquedas" />
+    <option name="LAST_COMMIT_MESSAGE" value="Probando las busquedas" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
-          <line>97</line>
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
-          <line>105</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
-          <line>107</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
           <line>132</line>
@@ -461,8 +494,308 @@
           <line>140</line>
           <option name="timeStamp" value="25" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>175</line>
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>176</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>178</line>
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>179</line>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>97</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>99</line>
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>100</line>
+          <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>101</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>102</line>
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>106</line>
+          <option name="timeStamp" value="40" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>107</line>
+          <option name="timeStamp" value="41" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>108</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>109</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>111</line>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>140</line>
+          <option name="timeStamp" value="47" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>138</line>
+          <option name="timeStamp" value="48" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>135</line>
+          <option name="timeStamp" value="49" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>136</line>
+          <option name="timeStamp" value="50" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>133</line>
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>131</line>
+          <option name="timeStamp" value="53" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>126</line>
+          <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>124</line>
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>40</line>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>42</line>
+          <option name="timeStamp" value="57" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>41</line>
+          <option name="timeStamp" value="58" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>43</line>
+          <option name="timeStamp" value="59" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>44</line>
+          <option name="timeStamp" value="60" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>46</line>
+          <option name="timeStamp" value="61" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>45</line>
+          <option name="timeStamp" value="62" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>48</line>
+          <option name="timeStamp" value="63" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>47</line>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>49</line>
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>50</line>
+          <option name="timeStamp" value="66" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>145</line>
+          <option name="timeStamp" value="67" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>148</line>
+          <option name="timeStamp" value="68" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>149</line>
+          <option name="timeStamp" value="69" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>152</line>
+          <option name="timeStamp" value="70" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>154</line>
+          <option name="timeStamp" value="72" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>153</line>
+          <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>155</line>
+          <option name="timeStamp" value="74" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>156</line>
+          <option name="timeStamp" value="75" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>157</line>
+          <option name="timeStamp" value="76" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>159</line>
+          <option name="timeStamp" value="77" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>160</line>
+          <option name="timeStamp" value="78" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>163</line>
+          <option name="timeStamp" value="79" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>162</line>
+          <option name="timeStamp" value="80" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>161</line>
+          <option name="timeStamp" value="81" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>165</line>
+          <option name="timeStamp" value="82" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py</url>
+          <line>164</line>
+          <option name="timeStamp" value="83" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>257</line>
+          <option name="timeStamp" value="84" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>259</line>
+          <option name="timeStamp" value="85" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>108</line>
+          <option name="timeStamp" value="86" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>110</line>
+          <option name="timeStamp" value="87" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>111</line>
+          <option name="timeStamp" value="88" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>141</line>
+          <option name="timeStamp" value="89" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>140</line>
+          <option name="timeStamp" value="103" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>142</line>
+          <option name="timeStamp" value="104" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py</url>
+          <line>143</line>
+          <option name="timeStamp" value="105" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>165</line>
+          <option name="timeStamp" value="107" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py</url>
+          <line>167</line>
+          <option name="timeStamp" value="109" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="26" />
+      <option name="time" value="110" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -558,14 +891,6 @@
     <entry file="file://$PROJECT_DIR$/Python/HelloWorld.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/FlaskServer.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/Logging.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-204" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/OntoNamespaces.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -623,19 +948,56 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py">
+    <entry file="file://C:/Python27/Lib/multiprocessing/process.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="103" column="90" selection-start-line="103" selection-start-column="75" selection-end-line="103" selection-end-column="90" />
+        <state relative-caret-position="126">
+          <caret line="113" selection-start-line="113" selection-end-line="113" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Examples/AgentExamples/SimpleInfoAgent.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1439" />
+      </provider>
+    </entry>
+    <entry file="file://C:/Python27/Lib/site-packages/rdflib/graph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="148">
+          <caret line="394" selection-start-line="394" selection-end-line="394" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/Logging.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-612" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/FlaskServer.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://C:/Python27/Lib/site-packages/rdflib/namespace.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="155">
+          <caret line="238" column="44" selection-start-line="238" selection-start-column="18" selection-end-line="238" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/OntologyNamespaces.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="148">
+          <caret line="97" selection-start-line="97" selection-end-line="97" />
           <folding>
-            <element signature="e#140#167#0" expanded="true" />
+            <element signature="e#433#470#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/UserClient.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
+        <state relative-caret-position="-566">
           <caret line="153" selection-start-line="153" selection-end-line="153" />
           <folding>
             <element signature="e#125#138#0" expanded="true" />
@@ -643,22 +1005,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/SimpleDirectoryService.py">
+    <entry file="file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="132" column="68" selection-start-line="132" selection-start-column="59" selection-end-line="132" selection-end-column="68" />
+        <state relative-caret-position="182">
+          <caret line="110" selection-start-line="110" selection-end-line="110" />
           <folding>
-            <element signature="e#433#470#0" expanded="true" />
+            <element signature="e#372#409#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PracticaTienda/AgentesTienda/AgenteBuscador.py">
+    <entry file="file://$PROJECT_DIR$/PracticaTienda/utils/ACLMessages.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="43" lean-forward="true" selection-start-line="43" selection-end-line="43" />
+        <state relative-caret-position="342">
+          <caret line="165" selection-start-line="165" selection-end-line="165" />
           <folding>
-            <element signature="e#372#409#0" expanded="true" />
+            <element signature="e#140#155#0" expanded="true" />
           </folding>
         </state>
       </provider>

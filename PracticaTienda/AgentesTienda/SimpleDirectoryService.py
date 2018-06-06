@@ -112,10 +112,10 @@ def register():
         logger.info('Registrado agente: ' + agn_name + ' - tipus:' + agn_type)
         # Generamos un mensaje de respuesta
         return build_message(Graph(),
-            ACL.confirm,
-            sender=DirectoryAgent.uri,
-            receiver=agn_uri,
-            msgcnt=mss_cnt)
+                             ACL.confirm,
+                             sender=DirectoryAgent.uri,
+                             receiver=agn_uri,
+                             msgcnt=mss_cnt)
 
     def process_search():
         # Asumimos que hay una accion de busqueda que puede tener
@@ -141,7 +141,7 @@ def register():
             rsp_obj = agn['Directory-response']
             gr.add((rsp_obj, DSO.Address, agn_add))
             gr.add((rsp_obj, DSO.Uri, agn_uri))
-            gr.add((rsp_obj,FOAF.name, agn_name))
+            gr.add((rsp_obj, FOAF.name, agn_name))
             return build_message(gr,
                                  ACL.inform,
                                  sender=DirectoryAgent.uri,
@@ -151,9 +151,9 @@ def register():
         else:
             # Si no encontramos nada retornamos un inform sin contenido
             return build_message(Graph(),
-                ACL.inform,
-                sender=DirectoryAgent.uri,
-                msgcnt=mss_cnt)
+                                 ACL.inform,
+                                 sender=DirectoryAgent.uri,
+                                 msgcnt=mss_cnt)
 
     global dsgraph
     global mss_cnt
@@ -168,17 +168,17 @@ def register():
     if not msgdic:
         # Si no es, respondemos que no hemos entendido el mensaje
         gr = build_message(Graph(),
-            ACL['not-understood'],
-            sender=DirectoryAgent.uri,
-            msgcnt=mss_cnt)
+                           ACL['not-understood'],
+                           sender=DirectoryAgent.uri,
+                           msgcnt=mss_cnt)
     else:
         # Obtenemos la performativa
         if msgdic['performative'] != ACL.request:
             # Si no es un request, respondemos que no hemos entendido el mensaje
             gr = build_message(Graph(),
-                ACL['not-understood'],
-                sender=DirectoryAgent.uri,
-                msgcnt=mss_cnt)
+                               ACL['not-understood'],
+                               sender=DirectoryAgent.uri,
+                               msgcnt=mss_cnt)
         else:
             # Extraemos el objeto del contenido que ha de ser una accion de la ontologia
             # de registro
@@ -195,9 +195,9 @@ def register():
             # No habia ninguna accion en el mensaje
             else:
                 gr = build_message(Graph(),
-                        ACL['not-understood'],
-                        sender=DirectoryAgent.uri,
-                        msgcnt=mss_cnt)
+                                   ACL['not-understood'],
+                                   sender=DirectoryAgent.uri,
+                                   msgcnt=mss_cnt)
     mss_cnt += 1
     return gr.serialize(format='xml')
 
@@ -232,25 +232,10 @@ def tidyup():
     cola1.put(0)
 
 
-def agentbehavior1(cola):
-    """
-    Behaviour que simplemente espera mensajes de una cola y los imprime
-    hasta que llega un 0 a la cola
-    """
-
-
-
 if __name__ == '__main__':
     # Ponemos en marcha los behaviours como procesos
-    ab1 = Process(target=agentbehavior1, args=(cola1,))
-    ab1.start()
-    cola1.put(2)
 
     # Ponemos en marcha el servidor Flask
     app.run(host=hostname, port=port, debug=True)
 
-    cola1.put(2)
-
-
-    ab1.join()
     logger.info('The End')

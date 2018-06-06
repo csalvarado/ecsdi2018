@@ -283,10 +283,10 @@ def browser_retorna():
         for item in sells_checked:
             g.add((content, ECSDI.CompraRetornada, URIRef(item)))
 
-        seller = get_agent_info(agn.SellerAgent, DirectoryAgent, UserPersonalAgent, get_count())
+        seller = get_agent_info(agn.SellerAgent, DirectoryAgent, UserClient, get_count())
 
         send_message(
-            build_message(g, perf=ACL.request, sender=UserPersonalAgent.uri, receiver=seller.uri,
+            build_message(g, perf=ACL.request, sender=UserClient.uri, receiver=seller.uri,
                           msgcnt=get_count(),
                           content=content), seller.address)
 
