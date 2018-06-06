@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="https://lh3.googleusercontent.com/-c9bKgaRfC3Q/AAAAAAAAAAI/AAAAAAAAJUE/Eo2MLCqyiZs/s0-c-k-no-ns/photo.jpg">
-    <title>Amazdonde | Cerca de productes</title>
+    <title>Amazon V2 | Busqueda de productes</title>
 </head>
 <body>
-    <h1>Cerca de productes</h1>
+    <h1>Búsqueda de Productos</h1>
     <a href="javascript:history.back()">< Volver</a>
-    {% if not products %}
-        <form method="post">
+        <form method="post", style="margin-top: 10px">
             <input type="text" name="nom" placeholder="Nom..."/><br>
             <input type="text" name="marca" placeholder="Marca..."/><br>
             <input type="number" name="max_price" step="0.01" min="0.0" placeholder="Preu màxim..."/><br>
             <input type="number" name="min_price" step="0.01" min="0.0" placeholder="Preu minim..."/><br>
             <input type="submit" name="submit" value="Cerca">
         </form>
-    {% else %}
+        {% if products %}
         <form method="post">
             <table cellpadding="5px">
                 <tr>

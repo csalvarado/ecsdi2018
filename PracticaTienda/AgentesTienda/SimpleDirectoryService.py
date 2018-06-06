@@ -135,11 +135,13 @@ def register():
         if rsearch is not None:
             agn_uri = rsearch.next()[0]
             agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
+            agn_name = dsgraph.name(subject=agn_uri, predicate=FOAF.name)
             gr = Graph()
             gr.bind('dso', DSO)
             rsp_obj = agn['Directory-response']
             gr.add((rsp_obj, DSO.Address, agn_add))
             gr.add((rsp_obj, DSO.Uri, agn_uri))
+            gr.add((rsp_obj,FOAF.name, agn_name))
             return build_message(gr,
                                  ACL.inform,
                                  sender=DirectoryAgent.uri,
@@ -235,16 +237,7 @@ def agentbehavior1(cola):
     Behaviour que simplemente espera mensajes de una cola y los imprime
     hasta que llega un 0 a la cola
     """
-    fin = False
-    while not fin:
-        while cola.empty():
-            pass
-        v = cola.get()
-        if v == 0:
-            print(v)
-            return 0
-        else:
-            print(v)
+
 
 
 if __name__ == '__main__':

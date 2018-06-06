@@ -151,12 +151,12 @@ def browser_cerca():
                     gr.add((subject_preus, ECSDI.Precio_max, Literal(max_price)))
                 gr.add((contentResult, ECSDI.Restringe, URIRef(subject_preus)))
 
-            buscador = get_agent_info(agn.AgenteBuscador, DirectoryAgent, UserClient, get_count())
+            Buscador = get_agent_info(agn.AgenteBuscador, DirectoryAgent, UserClient, get_count())
 
             gr2 = send_message(
-                build_message(gr, perf=ACL.request, sender=UserClient.uri, receiver=buscador.uri,
+                build_message(gr, perf=ACL.request, sender=UserClient.uri, receiver=Buscador.uri,
                               msgcnt=get_count(),
-                              content=contentResult), buscador.address)
+                              content=contentResult), Buscador.address)
 
             index = 0
             subject_pos = {}
@@ -245,10 +245,10 @@ def browser_cerca():
 
             gr.add((content, ECSDI.Sobre, URIRef(subject_sobre)))
 
-            seller = get_agent_info(agn.SellerAgent, DirectoryAgent, UserPersonalAgent, get_count())
+            seller = get_agent_info(agn.SellerAgent, DirectoryAgent, UserClient, get_count())
 
             answer = send_message(
-                build_message(gr, perf=ACL.request, sender=UserPersonalAgent.uri, receiver=seller.uri,
+                build_message(gr, perf=ACL.request, sender=UserClient.uri, receiver=seller.uri,
                               msgcnt=get_count(),
                               content=content), seller.address)
 
