@@ -15,29 +15,45 @@ Asume que el agente de registro esta en el puerto 9000
 """
 
 from __future__ import print_function
+
+import argparse
+import sys
+from imaplib import Literal
 from multiprocessing import Process, Queue
 import socket
 
-from rdflib import Namespace, Graph
+from rdflib import Namespace, Graph, logger, RDF, XSD
 from flask import Flask, request
 
+from PracticaTienda.utils.ACLMessages import get_message_properties, build_message
 from PracticaTienda.utils.FlaskServer import shutdown_server
 from PracticaTienda.utils.Agent import Agent
-__author__ = 'javier'
+from PracticaTienda.utils.OntoNamespaces import ACL
+from PracticaTienda.utils.OntologyNamespaces import ECSDI
 
+__author__ = 'Amazon V2'
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--open', help="Define si el servidor est abierto al exterior o no", action='store_true',
+                    default=False)
+parser.add_argument('--port', type=int, help="Puerto de comunicacion del agente")
+parser.add_argument('--dhost', default=socket.gethostname(), help="Host del agente de directorio")
+parser.add_argument('--dport', type=int, help="Puerto de comunicacion del agente de directorio")
+
+args = parser.parse_args()
 
 # Configuration stuff
 hostname = socket.gethostname()
-port = 9001
+port = 9002
 
-agn = Namespace("http://www.agentes.org/Entidad#")
+agn = Namespace("http://www.agentes.org#")
 
 # Contador de mensajes
 mss_cnt = 0
 
 # Datos del Agente
 
-AgentePersonal = Agent('Buscador',
+AgenteBuscador = Agent('Buscador',
                        agn.AgenteBuscador,
                        'http://%s:%d/comm' % (hostname, port),
                        'http://%s:%d/Stop' % (hostname, port))
@@ -55,30 +71,133 @@ dsgraph = Graph()
 cola1 = Queue()
 
 # Flask stuff
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates')
+
+def get_count():
+    global messages_cnt
+    messages_cnt += 1
+    return messages_cnt
 
 
 @app.route("/comm")
 def comunicacion():
-    """
-    Entrypoint de comunicacion
-    """
     global dsgraph
     global mss_cnt
-    pass
+    gr =  None
+    logger.info ('Peticion de info recibida')
 
-@app.route("/Busqueda")
-def prueba():
-    """
-    Entrypoint de comunicacion
-    """
-    dsgraph.parse("../Productos/product.owl", format ="json")
-    x = int(request.args['x'])
-    cola1.put(x)
-    global dsgraph
-    global mss_cnt
-    return "Buscando"
-    pass
+    # Extraemos el mensaje que nos envian
+    mensaje = request.args['content']
+    gm = Graph()
+    gm.parse(data=mensaje)
+
+    msgdic = get_message_properties(gm)
+
+    #Comprobacion del mensaje
+
+    if msgdic is None:
+        gr = build_message(Graph(), ACL['no_entendido'],sender=AgenteBuscador.uri, msgcnt=get_count())
+    else:
+        performative = msgdic['performative']
+
+        if performative != ACL.request:
+            gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteBuscador.uri, msgcnt=get_count())
+
+        else:
+
+            content = msgdic['content']
+            accion = gm.value(subject=content, predicate=RDF.type)
+
+            if accion == ECSDI.Peticion_Busqueda:
+                restricciones = gm.objects(content, ECSDI.Restricciones)
+                restricciones_vec = {}
+                for restriccion in restricciones:
+                    if gm.value(subject=restriccion, predicate=RDF.type) == ECSDI.Restriccion_Marca:
+                        marca = gm.value(subject=restriccion, predicate=ECSDI.Marca)
+                        logger.info('MARCA: ' + marca)
+                        restricciones_vec['brand'] = marca
+                    elif gm.value(subject=restriccion, predicate=RDF.type) == ECSDI.Restriccion_modelo:
+                        modelo = gm.value(subject=restriccion, predicate=ECSDI.Modelo)
+                        logger.info('MODELO: ' + modelo)
+                        restricciones_vec['model'] = modelo
+                    elif gm.value(subject=restriccion, predicate=RDF.type) == ECSDI.Rango_precio:
+                        preu_max = gm.value(subject=restriccion, predicate=ECSDI.Precio_max)
+                        preu_min = gm.value(subject=restriccion, predicate=ECSDI.Precio_min)
+                        if preu_min:
+                            logger.info('Preu minim: ' + preu_min)
+                            restricciones_vec['min_price'] = preu_min.toPython()
+                        if preu_max:
+                            logger.info('Preu maxim: ' + preu_max)
+                            restricciones_vec['max_price'] = preu_max.toPython()
+
+                gr = findProducts(**restricciones_vec)
+
+                logger.info('Respondemos a la peticion')
+
+                serialize = gr.serialize(format='xml')
+                return serialize, 200
+
+
+def findProducts(modelo=None, brand=None, min_price=0.0, max_price=sys.float_info.max):
+    graph = Graph()
+    ontologyFile = open('../data/productos')
+    graph.parse(ontologyFile, format='turtle')
+
+    first = second = 0
+    query = """
+        prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        prefix xsd:<http://www.w3.org/2001/XMLSchema#>
+        prefix default:<http://www.owl-ontologies.com/ECSDIAmazon.owl#>
+        prefix owl:<http://www.w3.org/2002/07/owl#>
+        SELECT DISTINCT ?producto ?nombre ?marca ?modelo ?precio ?peso
+        where {
+            { ?producto rdf:type default:Producto } UNION { ?producto rdf:type default:Producto_externo } .
+            ?producto default:Nombre ?nombre .
+            ?producto default:Marca ?marca .
+            ?producto default:Modelo ?modelo .
+            ?producto default:Precio ?precio .
+            ?producto default:Peso ?peso .
+            FILTER("""
+
+    if modelo is not None:
+        query += """str(?modelo) = '""" + modelo + """'"""
+        first = 1
+
+    if brand is not None:
+        if first == 1:
+            query += """ && """
+        query += """str(?marca) = '""" + brand + """'"""
+        second = 1
+
+    if first == 1 or second == 1:
+        query += """ && """
+    query += """?precio >= """ + str(min_price) + """ &&
+                ?precio <= """ + str(max_price) + """  )}
+                order by asc(UCASE(str(?nombre)))"""
+
+    graph_query = graph.query(query)
+    result = Graph()
+    result.bind('ECSDI', ECSDI)
+    product_count = 0
+    for row in graph_query:
+        nombre = row.nombre
+        modelo = row.modelo
+        marca = row.marca
+        precio = row.precio
+        peso = row.peso
+        logger.debug(nombre, marca, modelo, precio)
+        subject = row.producto
+        product_count += 1
+        result.add((subject, RDF.type, ECSDI.Producte))
+        result.add((subject, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
+        result.add((subject, ECSDI.Modelo, Literal(modelo, datatype=XSD.string)))
+        result.add((subject, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+        result.add((subject, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
+        result.add((subject, ECSDI.Nombre, Literal(nombre, datatype=XSD.string)))
+    return result
+
+
+
 
 
 @app.route("/Stop")
@@ -106,10 +225,6 @@ def agentbehavior1(cola):
     Un comportamiento del agente
 
     """
-    a = cola.get()
-    a += a
-
-    print(a)
     pass
 
 

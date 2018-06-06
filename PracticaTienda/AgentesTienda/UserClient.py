@@ -39,7 +39,7 @@ args = parser.parse_args()
 
 # Configuration stuff
 if args.port is None:
-    port = 9081
+    port = 9001
 else:
     port = args.port
 
@@ -118,19 +118,19 @@ def browser_cerca():
             logger.info("Enviando peticion de busqueda")
 
             # Content of the message
-            contentResult = ECSDI['Cerca_productes_' + str(get_count())]
+            contentResult = ECSDI['Peticion_Busqueda' + str(get_count())]
 
             # Graph creation
             gr = Graph()
-            gr.add((contentResult, RDF.type, ECSDI.Cerca_productes))
+            gr.add((contentResult, RDF.type, ECSDI.Peticion_Busqueda))
 
             # Add restriccio nom
-            nom = request.form['nom']
-            if nom:
+            nombre = request.form['nombre']
+            if nombre:
                 # Subject nom
-                subject_nom = ECSDI['RestriccioNom' + str(get_count())]
-                gr.add((subject_nom, RDF.type, ECSDI.RestriccioNom))
-                gr.add((subject_nom, ECSDI.Nom, Literal(nom, datatype=XSD.string)))
+                subject_nom = ECSDI['RestriccionNombre' + str(get_count())]
+                gr.add((subject_nom, RDF.type, ECSDI.Restriccion_Nombre))
+                gr.add((subject_nom, ECSDI.Nom, Literal(nombre, datatype=XSD.string)))
                 # Add restriccio to content
                 gr.add((contentResult, ECSDI.Restringe, URIRef(subject_nom)))
             marca = request.form['marca']
@@ -143,7 +143,7 @@ def browser_cerca():
             max_price = request.form['max_price']
 
             if min_price or max_price:
-                subject_preus = ECSDI['Restriccion_Preus_' + str(get_count())]
+                subject_preus = ECSDI['Restriccion_Precios_' + str(get_count())]
                 gr.add((subject_preus, RDF.type, ECSDI.Rango_precio))
                 if min_price:
                     gr.add((subject_preus, ECSDI.Precio_min, Literal(min_price)))
