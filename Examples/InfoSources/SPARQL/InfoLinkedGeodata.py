@@ -15,8 +15,7 @@ lgdo:Amenity
 """
 
 from SPARQLWrapper import SPARQLWrapper, JSON
-from AgentUtil.SPARQLPoints import GEODATA, LGEODATA
-
+from PracticaTienda.utils.SPARQLPoints import GEODATA
 
 sparql = SPARQLWrapper(GEODATA)
 

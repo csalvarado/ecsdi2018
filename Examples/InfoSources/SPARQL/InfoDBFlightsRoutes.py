@@ -20,7 +20,7 @@ import gzip
 
 from rdflib import Graph
 
-from AgentUtil.OntoNamespaces import TIO
+from PracticaTienda.utils.OntoNamespaces import TIO
 
 
 g = Graph()

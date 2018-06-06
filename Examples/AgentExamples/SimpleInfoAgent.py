@@ -17,11 +17,11 @@ from flask import Flask, request
 from rdflib import Graph, Namespace, Literal
 from rdflib.namespace import FOAF, RDF
 
-from AgentUtil.OntoNamespaces import ACL, DSO
-from AgentUtil.FlaskServer import shutdown_server
-from AgentUtil.ACLMessages import build_message, send_message, get_message_properties
-from AgentUtil.Agent import Agent
-from AgentUtil.Logging import config_logger
+from PracticaTienda.utils.OntoNamespaces import ACL, DSO
+from PracticaTienda.utils.FlaskServer import shutdown_server
+from PracticaTienda.utils.ACLMessages import build_message, send_message, get_message_properties
+from PracticaTienda.utils.Agent import Agent
+from PracticaTienda.utils.Logging import config_logger
 
 __author__ = 'javier'
 

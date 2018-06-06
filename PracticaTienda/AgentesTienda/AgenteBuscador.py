@@ -21,8 +21,8 @@ import socket
 from rdflib import Namespace, Graph
 from flask import Flask, request
 
-from AgentUtil.FlaskServer import shutdown_server
-from AgentUtil.Agent import Agent
+from PracticaTienda.utils.FlaskServer import shutdown_server
+from PracticaTienda.utils.Agent import Agent
 __author__ = 'javier'
 
 
@@ -37,7 +37,7 @@ mss_cnt = 0
 
 # Datos del Agente
 
-AgentePersonal = Agent('AgenteSimple',
+AgentePersonal = Agent('Buscador',
                        agn.AgenteBuscador,
                        'http://%s:%d/comm' % (hostname, port),
                        'http://%s:%d/Stop' % (hostname, port))

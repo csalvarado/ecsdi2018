@@ -14,10 +14,9 @@ tienen definidos
 """
 __author__ = 'javier'
 
-from SPARQLWrapper import SPARQLWrapper, JSON, XML, RDF, N3
-from rdflib import Graph, BNode, Literal
+from SPARQLWrapper import SPARQLWrapper, JSON, RDF
 
-from AgentUtil.SPARQLPoints import DBPEDIA
+from PracticaTienda.utils.SPARQLPoints import DBPEDIA
 
 # Configuramos el SPARQL de wikipedia
 sparql = SPARQLWrapper(DBPEDIA)
