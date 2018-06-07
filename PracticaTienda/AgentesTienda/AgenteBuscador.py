@@ -226,7 +226,7 @@ def findProducts(modelo=None, brand=None, min_price=0.0, max_price=sys.float_inf
         result.add((subject, ECSDI.Modelo, Literal(modelo, datatype=XSD.string)))
         result.add((subject, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
         result.add((subject, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
-        result.add((subject, ECSDI.name, Literal(nombre, datatype=XSD.string)))
+        result.add((subject, ECSDI.Nombre, Literal(nombre, datatype=XSD.string)))
     return result
 
 
