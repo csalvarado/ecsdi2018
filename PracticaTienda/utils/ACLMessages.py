@@ -23,12 +23,11 @@ agn = Namespace("http://www.agentes.org#")
 
 
 
-def build_message(gmess, perf, sender=None, receiver=None,  content=None, msgcnt= 0):
+def build_message(gmess, perf, sender=None, receiver=None, content=None, msgcnt=0):
     """
     Construye un mensaje como una performativa FIPA acl
-    Asume que en el grafo que se recibe esta ya el contenido y esta ligado al
+    Asume que en el grafo que se recibe esta ya  el contenido y esta ligado al
     URI en el parametro contenido
-
     :param gmess: grafo RDF sobre el que se deja el mensaje
     :param perf: performativa del mensaje
     :param sender: URI del sender
@@ -38,7 +37,7 @@ def build_message(gmess, perf, sender=None, receiver=None,  content=None, msgcnt
     :return:
     """
     # Añade los elementos del speech act al grafo del mensaje
-    mssid = 'message-'+str(sender.__hash__()) + '-{:{fill}4d}'.format(msgcnt, fill='0')
+    mssid = 'message-' + str(sender.__hash__()) + '-{:{fill}4d}'.format(msgcnt, fill='0')
     ms = ACL[mssid]
     gmess.bind('acl', ACL)
     gmess.add((ms, RDF.type, ACL.FipaAclMessage))
@@ -148,13 +147,12 @@ def register_agent(origin_agent, directory_agent, type_, msg_cnt):
     # Construimos el mensaje de registro
     gmess.bind('foaf', FOAF)
     gmess.bind('dso', DSO)
-    name = Literal(origin_agent.name)
-    address = Literal(origin_agent.address)
+    name = Literal (origin_agent.name)
     reg_obj = agn[origin_agent.name + '-Register']
     gmess.add((reg_obj, RDF.type, DSO.Register))
     gmess.add((reg_obj, DSO.Uri, origin_agent.uri))
-    gmess.add((reg_obj, FOAF.name, name))
-    gmess.add((reg_obj, DSO.Address, address))
+    gmess.add((reg_obj, FOAF.name, Literal(origin_agent.name)))
+    gmess.add((reg_obj, DSO.Address, Literal(origin_agent.address)))
     gmess.add((reg_obj, DSO.AgentType, type_))
     # Lo metemos en un envoltorio FIPA-ACL y lo enviamos
     gr = send_message(

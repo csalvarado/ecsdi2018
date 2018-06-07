@@ -69,7 +69,7 @@ mss_cnt = 0
 
 # Datos del Agente
 UserClient = Agent('UserClient',
-                          agn.UserPersonalAgent,
+                          agn.UserClient,
                           'http://%s:%d/comm' % (hostname, port),
                           'http://%s:%d/Stop' % (hostname, port))
 
@@ -130,15 +130,15 @@ def browser_cerca():
                 # Subject nom
                 subject_nom = ECSDI['RestriccionNombre' + str(get_count())]
                 gr.add((subject_nom, RDF.type, ECSDI.Restriccion_Nombre))
-                gr.add((subject_nom, ECSDI.Nom, Literal(nombre, datatype=XSD.string)))
+                gr.add((subject_nom, ECSDI.name, Literal(nombre, datatype=XSD.string)))
                 # Add restriccio to content
-                gr.add((contentResult, ECSDI.Restringe, URIRef(subject_nom)))
+                gr.add((contentResult, ECSDI.Restricciones, URIRef(subject_nom)))
             marca = request.form['marca']
             if marca:
                 subject_marca = ECSDI['Restriccion_Marca_' + str(get_count())]
                 gr.add((subject_marca, RDF.type, ECSDI.Restriccion_Marca))
                 gr.add((subject_marca, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
-                gr.add((contentResult, ECSDI.Restringe, URIRef(subject_marca)))
+                gr.add((contentResult, ECSDI.Restricciones, URIRef(subject_marca)))
             min_price = request.form['min_price']
             max_price = request.form['max_price']
 
@@ -149,7 +149,7 @@ def browser_cerca():
                     gr.add((subject_preus, ECSDI.Precio_min, Literal(min_price)))
                 if max_price:
                     gr.add((subject_preus, ECSDI.Precio_max, Literal(max_price)))
-                gr.add((contentResult, ECSDI.Restringe, URIRef(subject_preus)))
+                gr.add((contentResult, ECSDI.Restricciones, URIRef(subject_preus)))
 
             Buscador = get_agent_info(agn.AgenteBuscador, DirectoryAgent, UserClient, get_count())
 
@@ -182,7 +182,7 @@ def browser_cerca():
                         subject_dict['peso'] = o
                     product_list[subject_pos[s]] = subject_dict
 
-            return render_template('cerca.html', products=product_list)
+            return render_template('busqueda.html', products=product_list)
 
         # --------------------------------------------------------------------------------------------------------------
 

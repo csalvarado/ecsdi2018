@@ -98,7 +98,7 @@ def register():
         logger.info('Peticion de registro')
 
         agn_add = gm.value(subject=content, predicate=DSO.Address)
-        agn_name = gm.value(subject=content, predicate=FOAF.Name)
+        agn_name = gm.value(subject=content, predicate=FOAF.name)
         agn_uri = gm.value(subject=content, predicate=DSO.Uri)
         agn_type = gm.value(subject=content, predicate=DSO.AgentType)
 
@@ -135,7 +135,7 @@ def register():
         if rsearch is not None:
             agn_uri = rsearch.next()[0]
             agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
-            agn_name = dsgraph.name(subject=agn_uri, predicate=FOAF.name)
+            agn_name = dsgraph.value(subject=agn_uri, predicate=FOAF.name)
             gr = Graph()
             gr.bind('dso', DSO)
             rsp_obj = agn['Directory-response']

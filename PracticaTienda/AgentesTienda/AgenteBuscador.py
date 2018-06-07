@@ -18,12 +18,12 @@ from __future__ import print_function
 
 import argparse
 import sys
-from imaplib import Literal
+
 from multiprocessing import Process, Queue
 import socket
 
 
-from rdflib import Namespace, Graph, logger, RDF, XSD
+from rdflib import Namespace, Graph, logger, RDF, XSD, Literal
 from flask import Flask, request
 
 from PracticaTienda.utils.ACLMessages import get_message_properties, build_message, register_agent
@@ -173,7 +173,7 @@ def comunicacion():
 
 def findProducts(modelo=None, brand=None, min_price=0.0, max_price=sys.float_info.max):
     graph = Graph()
-    ontologyFile = open('../data/productos')
+    ontologyFile = open('../Datos/productos')
     graph.parse(ontologyFile, format='turtle')
 
     first = second = 0
@@ -226,7 +226,7 @@ def findProducts(modelo=None, brand=None, min_price=0.0, max_price=sys.float_inf
         result.add((subject, ECSDI.Modelo, Literal(modelo, datatype=XSD.string)))
         result.add((subject, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
         result.add((subject, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
-        result.add((subject, ECSDI.Nombre, Literal(nombre, datatype=XSD.string)))
+        result.add((subject, ECSDI.name, Literal(nombre, datatype=XSD.string)))
     return result
 
 
