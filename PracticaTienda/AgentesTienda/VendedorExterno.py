@@ -126,11 +126,11 @@ def browser_registrarProducto():
         vendido = 0
 
         # Content of the message
-        content = ECSDI['Registra_productes_' + str(get_count())]
+        content = ECSDI['Registrar_productos_' + str(get_count())]
 
         # Graph creation
         gr = Graph()
-        gr.add((content, RDF.type, ECSDI.Registra_productes))
+        gr.add((content, RDF.type, ECSDI.Registrar_productos))
 
         # Anadir nuevo producto externo al grafo
 

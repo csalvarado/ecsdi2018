@@ -147,8 +147,7 @@ def comunicacion():
 
     return gr.serialize(format='xml'), 200
 
-    global dsgraph
-    global mss_cnt
+
     pass
 
 
@@ -196,6 +195,7 @@ def agentbehavior1():
 
     :return:
     """
+    register_message()
     pass
 
 
