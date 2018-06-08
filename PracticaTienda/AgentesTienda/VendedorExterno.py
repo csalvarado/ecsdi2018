@@ -66,8 +66,8 @@ agn = Namespace("http://www.agentes.org#")
 mss_cnt = 0
 
 # Datos del Agente
-ExternalSellerPersonalAgent = Agent('ExternalSellerPersonalAgent',
-                                    agn.ExternalSellerPersonalAgent,
+VendedorExterno = Agent('VenderoExterno',
+                                    agn.VendedorExterno,
                                     'http://%s:%d/comm' % (hostname, port),
                                     'http://%s:%d/Stop' % (hostname, port))
 
@@ -101,7 +101,7 @@ def register_message():
 
     logger.info('Nos registramos')
 
-    return register_agent(ExternalSellerPersonalAgent, DirectoryAgent, ExternalSellerPersonalAgent.uri, get_count())
+    return register_agent(VendedorExterno, DirectoryAgent, VendedorExterno.uri, get_count())
 
 
 @app.route("/")
@@ -118,11 +118,11 @@ def browser_registrarProducto():
     if request.method == 'GET':
         return render_template('registrarProductos.html')
     else:
-        marca = request.form['marca']
-        nom = request.form['nom']
-        model = request.form['model']
-        preu = request.form['preu']
-        peso = request.form['peso']
+        Marca = request.form['Marca']
+        Nombre = request.form['Nombre']
+        Modelo = request.form['Modelo']
+        Precio = request.form['Precio']
+        Peso = request.form['Peso']
         vendido = 0
 
         # Content of the message
@@ -137,26 +137,26 @@ def browser_registrarProducto():
         subjectProd = ECSDI['Producto_externo_' + str(random.randint(1, sys.float_info.max))]
 
         gr.add((subjectProd, RDF.type, ECSDI.Producto_externo))
-        gr.add((subjectProd, ECSDI.Nombre, Literal(nom, datatype=XSD.string)))
-        gr.add((subjectProd, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
-        gr.add((subjectProd, ECSDI.Modelo, Literal(model, datatype=XSD.string)))
-        gr.add((subjectProd, ECSDI.Precio, Literal(preu, datatype=XSD.float)))
-        gr.add((subjectProd, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
+        gr.add((subjectProd, ECSDI.Nombre, Literal(Nombre, datatype=XSD.string)))
+        gr.add((subjectProd, ECSDI.Marca, Literal(Marca, datatype=XSD.string)))
+        gr.add((subjectProd, ECSDI.Modelo, Literal(Modelo, datatype=XSD.string)))
+        gr.add((subjectProd, ECSDI.Precio, Literal(Precio, datatype=XSD.float)))
+        gr.add((subjectProd, ECSDI.Peso, Literal(Peso, datatype=XSD.float)))
         gr.add((subjectProd, ECSDI.Vendido, Literal(vendido)))
 
         gr.add((content, ECSDI.producto, subjectProd))
 
-        productsag = get_agent_info(agn.ProductsAgent, DirectoryAgent, ExternalSellerPersonalAgent, get_count())
+        publicador = get_agent_info(agn.AgentePublicador, DirectoryAgent, VendedorExterno, get_count())
 
         send_message(
-            build_message(gr, perf=ACL.request, sender=ExternalSellerPersonalAgent.uri, receiver=productsag.uri,
+            build_message(gr, perf=ACL.request, sender=VendedorExterno.uri, receiver=publicador.uri,
                           msgcnt=get_count(),
-                          content=content), productsag.address)
+                          content=content), publicador.address)
 
-        res = {'marca': request.form['marca'], 'nom': request.form['nom'], 'model': request.form['model'],
-               'preu': request.form['preu'], 'peso': request.form['peso']}
+        producto_registrado = {'Marca': request.form['Marca'], 'Nombre': request.form['Nombre'], 'Modelo': request.form['Modelo'],
+               'Precio': request.form['Precio'], 'Peso': request.form['Peso']}
 
-        return render_template('endRegister.html', product=res)
+        return render_template('ProductoRegistrado.html', producto=producto_registrado)
 
 
 @app.route("/Stop")

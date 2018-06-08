@@ -15,6 +15,8 @@ Asume que el agente de registro esta en el puerto 9000
 """
 
 from __future__ import print_function
+
+import argparse
 from multiprocessing import Process, Queue
 import socket
 
@@ -188,7 +190,7 @@ def tidyup():
     pass
 
 
-def agentbehavior1(cola):
+def agentbehavior1():
     """
     Un comportamiento del agente
 
@@ -199,7 +201,7 @@ def agentbehavior1(cola):
 
 if __name__ == '__main__':
     # Ponemos en marcha los behaviors
-    ab1 = Process(target=agentbehavior1, args=(cola1,))
+    ab1 = Process(target=agentbehavior1, args=())
     ab1.start()
 
     # Ponemos en marcha el servidor
