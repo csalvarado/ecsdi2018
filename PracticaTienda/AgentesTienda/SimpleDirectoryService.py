@@ -23,8 +23,8 @@ import socket
 import argparse
 
 from flask import Flask, request, render_template
-from rdflib import Graph, RDF, Namespace, RDFS
-from rdflib.namespace import FOAF
+from rdflib import Graph, RDF, Namespace
+from rdflib.namespace import FOAF, RDFS
 
 from PracticaTienda.utils.OntoNamespaces import ACL, DSO
 from PracticaTienda.utils.FlaskServer import shutdown_server

@@ -114,7 +114,7 @@ def browser_cerca():
         return render_template('busqueda.html', products=None)
     elif request.method == 'POST':
         # Peticio de cerca
-        if request.form['submit'] == 'Cerca':
+        if request.form['submit'] == 'Buscar':
             logger.info("Enviando peticion de busqueda")
 
             # Content of the message
@@ -186,7 +186,7 @@ def browser_cerca():
 
         # --------------------------------------------------------------------------------------------------------------
 
-        # Peticio de compra
+        # Peticion de compra
         elif request.form['submit'] == 'Comprar':
             products_checked = []
             for item in request.form.getlist("checkbox"):
@@ -224,7 +224,7 @@ def browser_cerca():
             subject_sobre = ECSDI['Compra_' + str(random.randint(1, sys.float_info.max))]
             gr.add((subject_sobre, RDF.type, ECSDI.Compra))
 
-            gr.add((subject_sobre, ECSDI.Pagat, Literal(0, datatype=XSD.integer)))
+            gr.add((subject_sobre, ECSDI.Pagado, Literal(0, datatype=XSD.integer)))
             gr.add((subject_sobre, ECSDI.Enviar_a, URIRef(subject_ciudad)))
 
             total_price = 0.0
