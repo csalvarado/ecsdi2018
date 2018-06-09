@@ -13,32 +13,63 @@ Asume que el agente de registro esta en el puerto 9000
 
 @author: javier
 """
-
-from __future__ import print_function
-from multiprocessing import Process, Queue
+import argparse
+import datetime
+import random
 import socket
+import sys
+from Queue import Queue
+from multiprocessing import Process
 
-from rdflib import Namespace, Graph
-from flask import Flask
+from flask import Flask, request
+from rdflib import Namespace, Graph, logger, RDF, Literal, XSD, URIRef
 
-from PracticaTienda.utils.FlaskServer import shutdown_server
+from PracticaTienda.utils.ACLMessages import register_agent, build_message, get_message_properties, get_agent_info, \
+    send_message
 from PracticaTienda.utils.Agent import Agent
-__author__ = 'javier'
+from PracticaTienda.utils.FlaskServer import shutdown_server
+from PracticaTienda.utils.OntologyNamespaces import ECSDI, ACL
 
+__author__ = 'ECSDIshop'
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--open', help="Define si el servidor est abierto al exterior o no", action='store_true',
+                    default=False)
+parser.add_argument('--port', type=int, help="Puerto de comunicacion del agente")
+parser.add_argument('--dhost', default=socket.gethostname(), help="Host del agente de directorio")
+parser.add_argument('--dport', type=int, help="Puerto de comunicacion del agente de directorio")
+
+args = parser.parse_args()
 # Configuration stuff
-hostname = socket.gethostname()
-port = 9010
+if args.port is None:
+    port = 9004
+else:
+    port = args.port
+
+if args.open is None:
+    hostname = '0.0.0.0'
+else:
+    hostname = socket.gethostname()
+
+if args.dport is None:
+    dport = 9000
+else:
+    dport = args.dport
+
+if args.dhost is None:
+    dhostname = socket.gethostname()
+else:
+    dhostname = args.dhost
 
 agn = Namespace("http://www.agentes.org#")
 
 # Contador de mensajes
-mss_cnt = 0
+messages_cnt = 0
 
 # Datos del Agente
 
-AgentePersonal = Agent('AgenteSimple',
-                       agn.AgenteSimple,
+AgenteCentroLogisitico = Agent('AgenteCentroLogistico',
+                       agn.AgenteCentroLogistico,
                        'http://%s:%d/comm' % (hostname, port),
                        'http://%s:%d/Stop' % (hostname, port))
 
@@ -55,16 +86,72 @@ dsgraph = Graph()
 cola1 = Queue()
 
 # Flask stuff
-app = Flask(__name__)
+app = Flask(__name__,template_folder='../templates')
+
+def get_n_message():
+    global messages_cnt
+    messages_cnt += messages_cnt
+    return messages_cnt
+
+
+def register_message():
+    logger.info("Registrando Agente CentroLogistico...")
+    gr = register_agent(AgenteCentroLogisitico, DirectoryAgent, AgenteCentroLogisitico.uri, get_n_message())
 
 
 @app.route("/comm")
-def comunicacion():
-    """
-    Entrypoint de comunicacion
-    """
+def communication():
     global dsgraph
-    global mss_cnt
+    gr = None
+
+    logger.info('Peticion de informacion recibida')
+
+    # Extraemos el mensaje y creamos un grafo con el
+    message = request.args['content']
+    gm = Graph()
+    gm.parse(data=message)
+
+    msgdic = get_message_properties(gm)
+
+    # Comprobamos que sea un mensaje FIPA ACL
+    if msgdic is None:
+        # Si no es, respondemos que no hemos entendido el mensaje
+        gr = build_message(Graph(), ACL['not-understood'], sender=AgenteCentroLogisitico.uri, msgcnt=get_n_message())
+    else:
+        # Obtenemos la performativa
+        perf = msgdic['performative']
+
+        if perf != ACL.request:
+            # Si no es un request, respondemos que no hemos entendido el mensaje
+            gr = build_message(Graph(), ACL['not-understood'], sender=AgenteCentroLogisitico.uri, msgcnt=get_n_message())
+        else:
+            # Extraemos el objeto del contenido que ha de ser una accion de la ontologia de acciones del agente
+            # de registro
+
+            # Averiguamos el tipo de la accion
+            content = msgdic['content']
+            accion = gm.value(subject=content, predicate=RDF.type)
+
+            # Aqui realizariamos lo que pide la accion
+
+            if accion == ECSDI.Enviar_venta:
+                logger.info("Recibe comunicación del FinancialAgent")
+
+                #products = obtainProducts(gm)
+                #requestAvailability(products)
+
+                products = obtainProducts(gm)
+                gr = sendProducts(products)
+
+            else:
+                gr = build_message(Graph(),
+                                   ACL['not-understood'],
+                                   sender=DirectoryAgent.uri,
+                                   msgcnt=get_n_message())
+
+    logger.info('Respondemos a la peticion')
+
+    return gr.serialize(format='xml'), 200
     pass
 
 
@@ -79,6 +166,139 @@ def stop():
     shutdown_server()
     return "Parando Servidor"
 
+def obtainProducts(gm):
+    logger.info("Obtenemos los productos")
+
+    products = Graph()
+
+    sell = None
+    for item in gm.subjects(RDF.type, ECSDI.Compra):
+        sell = item
+
+    sellsGraph = Graph()
+    sellsGraph.parse(open('../Datos/Compras'), format='turtle')
+
+    for item in sellsGraph.objects(sell, ECSDI.Productos):
+        marca = sellsGraph.value(subject=item, predicate=ECSDI.Marca)
+        nombre = sellsGraph.value(subject=item, predicate=ECSDI.Nombre)
+        modelo = sellsGraph.value(subject=item, predicate=ECSDI.Modelo)
+        precio = sellsGraph.value(subject=item, predicate=ECSDI.Precio)
+        peso = sellsGraph.value(subject=item, predicate=ECSDI.Peso)
+        products.add((item, RDF.type, ECSDI.Producto))
+        products.add((item, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
+        products.add((item, ECSDI.Nombre, Literal(nombre, datatype=XSD.string)))
+        products.add((item, ECSDI.Modelo, Literal(modelo, datatype=XSD.string)))
+        products.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+        products.add((item, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
+
+    return products
+
+def sendProducts(gr):
+    logger.info('Enviamos los productos')
+    logger.info('Se envia el lote de productos')
+
+    date = dateToMillis(datetime.datetime.utcnow() + datetime.timedelta(days=9))
+    urlSend = writeSends(gr, date)
+
+    peso = obtainTotalWeight(urlSend)
+    requestTransport(date, peso)
+
+    gr = prepareSellResponse(urlSend)
+
+    return gr
+
+def obtainTotalWeight(urlSend):
+    totalWeight = 0.0
+
+    gSends = Graph()
+    gSends.parse(open('../data/enviaments'), format='turtle')
+    productsArray = []
+    for lote in gSends.objects(subject=urlSend, predicate=ECSDI.Envia):
+        for producto in gSends.objects(subject=lote, predicate=ECSDI.productos):
+            productsArray.append(producto)
+
+    gProducts = Graph()
+    gProducts.parse(open('../data/productes'), format='turtle')
+    for item in productsArray:
+        totalWeight += float(gProducts.value(subject=item, predicate=ECSDI.Peso))
+
+    return totalWeight
+
+
+
+
+def dateToMillis(date):
+    return (date - datetime.datetime.utcfromtimestamp(0)).total_seconds() * 1000.0
+
+
+def writeSends(gr, deliverDate):
+    subjectEnvio = ECSDI['Envio_' + str(random.randint(1, sys.float_info.max))]
+
+    gr.add((subjectEnvio, RDF.type, ECSDI.Envio))
+    gr.add((subjectEnvio, ECSDI.Fecha_de_entrega, Literal(deliverDate, datatype=XSD.float)))
+    for item in gr.subjects(RDF.type, ECSDI.Lote_producto):
+        gr.add((subjectEnvio, ECSDI.Envia, URIRef(item)))
+
+    g = Graph()
+    gr += g.parse(open('../Datos/Envios'), format='turtle')
+
+    gr.serialize(destination='../Datos/Envios', format='turtle')
+
+    return subjectEnvio
+
+
+def requestTransport(date, peso):
+    logger.info('Pedimos el transporte')
+
+    # Content of the message
+    content = ECSDI['Peticiona_transport_' + str(get_n_message())]
+
+    # Graph creation
+    gr = Graph()
+    gr.add((content, RDF.type, ECSDI.Peticiona_transport))
+
+    # Anadir fecha y peso
+    gr.add((content, ECSDI.Fecha, Literal(date, datatype=XSD.float)))
+    gr.add((content, ECSDI.Peso_envio, Literal(peso, datatype=XSD.float)))
+
+    Negociador = get_agent_info(agn.AgenteNegociador, DirectoryAgent, AgenteCentroLogisitico, get_n_message())
+
+    gr = send_message(
+        build_message(gr, perf=ACL.request, sender=AgenteCentroLogisitico.uri, receiver=Negociador.uri,
+                      msgcnt=get_n_message(),
+                      content=content), Negociador.address)
+
+
+def prepareSellResponse(urlSend):
+    g = Graph()
+
+    enviaments = Graph()
+    enviaments.parse(open('../Datos/Envios'), format='turtle')
+
+    urlProducts = []
+    for item in enviaments.objects(subject=urlSend, predicate=ECSDI.Envia):
+        for product in enviaments.objects(subject=item, predicate=ECSDI.productos):
+            urlProducts.append(product)
+
+    products = Graph()
+    products.parse(open('../Datos/productos'), format='turtle')
+
+    for item in urlProducts:
+        marca = products.value(subject=item, predicate=ECSDI.Marca)
+        modelo = products.value(subject=item, predicate=ECSDI.Modelo)
+        nombre = products.value(subject=item, predicate=ECSDI.Nombre)
+        precio = products.value(subject=item, predicate=ECSDI.Precio)
+
+        g.add((item, RDF.type, ECSDI.Producto))
+        g.add((item, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
+        g.add((item, ECSDI.Modelo, Literal(modelo, datatype=XSD.string)))
+        g.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+        g.add((item, ECSDI.Nombre, Literal(nombre, datatype=XSD.string)))
+
+    return g
+
+
+
 
 def tidyup():
     """
@@ -88,18 +308,19 @@ def tidyup():
     pass
 
 
-def agentbehavior1(cola):
+def agentbehavior1():
     """
     Un comportamiento del agente
 
     :return:
     """
+    register_message()
     pass
 
 
 if __name__ == '__main__':
     # Ponemos en marcha los behaviors
-    ab1 = Process(target=agentbehavior1, args=(cola1,))
+    ab1 = Process(target=agentbehavior1, args=())
     ab1.start()
 
     # Ponemos en marcha el servidor

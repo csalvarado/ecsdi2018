@@ -135,21 +135,21 @@ def browser_cerca():
                 gr.add((contentResult, ECSDI.Restricciones, URIRef(subject_nom)))
             marca = request.form['marca']
             if marca:
-                subject_marca = ECSDI['Restriccion_Marca_' + str(get_count())]
-                gr.add((subject_marca, RDF.type, ECSDI.Restriccion_Marca))
-                gr.add((subject_marca, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
-                gr.add((contentResult, ECSDI.Restricciones, URIRef(subject_marca)))
+                Sujeto_marca = ECSDI['Restriccion_Marca_' + str(get_count())]
+                gr.add((Sujeto_marca, RDF.type, ECSDI.Restriccion_Marca))
+                gr.add((Sujeto_marca, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
+                gr.add((contentResult, ECSDI.Restricciones, URIRef(Sujeto_marca)))
             min_price = request.form['min_price']
             max_price = request.form['max_price']
 
             if min_price or max_price:
-                subject_preus = ECSDI['Restriccion_Precios_' + str(get_count())]
-                gr.add((subject_preus, RDF.type, ECSDI.Rango_precio))
+                Sujeto_precios = ECSDI['Restriccion_Precios_' + str(get_count())]
+                gr.add((Sujeto_precios, RDF.type, ECSDI.Rango_precio))
                 if min_price:
-                    gr.add((subject_preus, ECSDI.Precio_min, Literal(min_price)))
+                    gr.add((Sujeto_precios, ECSDI.Precio_min, Literal(min_price)))
                 if max_price:
-                    gr.add((subject_preus, ECSDI.Precio_max, Literal(max_price)))
-                gr.add((contentResult, ECSDI.Restricciones, URIRef(subject_preus)))
+                    gr.add((Sujeto_precios, ECSDI.Precio_max, Literal(max_price)))
+                gr.add((contentResult, ECSDI.Restricciones, URIRef(Sujeto_precios)))
 
             Buscador = get_agent_info(agn.AgenteBuscador, DirectoryAgent, UserClient, get_count())
 
@@ -216,14 +216,13 @@ def browser_cerca():
             subject_ciudad = ECSDI['Ciudad_' + str(random.randint(1, sys.float_info.max))]
 
             gr.add((subject_ciudad, RDF.type, ECSDI.Ciudad))
-            gr.add((subject_ciudad, ECSDI.Nombre, Literal(41.398373, datatype=XSD.float)))
+            gr.add((subject_ciudad, ECSDI.Nombre, Literal('Barcelona', datatype=XSD.string)))
+            gr.add((subject_ciudad, ECSDI.Longitud, Literal(41.398373, datatype=XSD.float)))
             gr.add((subject_ciudad, ECSDI.Latitud, Literal(2.188247, datatype=XSD.float)))
-            gr.add((subject_ciudad, ECSDI.Longitud, Literal('Barcelona', datatype=XSD.string)))
 
             # Creacion del sobre (Compra) ------------------------------------------------------------------------------
             subject_sobre = ECSDI['Compra_' + str(random.randint(1, sys.float_info.max))]
             gr.add((subject_sobre, RDF.type, ECSDI.Compra))
-
             gr.add((subject_sobre, ECSDI.Pagado, Literal(0, datatype=XSD.integer)))
             gr.add((subject_sobre, ECSDI.Enviar_a, URIRef(subject_ciudad)))
 
@@ -245,22 +244,22 @@ def browser_cerca():
 
             gr.add((content, ECSDI.Sobre, URIRef(subject_sobre)))
 
-            seller = get_agent_info(agn.SellerAgent, DirectoryAgent, UserClient, get_count())
+            Comprador = get_agent_info(agn.AgenteComprador, DirectoryAgent, UserClient, get_count())
 
-            answer = send_message(
-                build_message(gr, perf=ACL.request, sender=UserClient.uri, receiver=seller.uri,
+            respuesta = send_message(
+                build_message(gr, perf=ACL.request, sender=UserClient.uri, receiver=Comprador.uri,
                               msgcnt=get_count(),
-                              content=content), seller.address)
+                              content=content), Comprador.address)
 
-            products_matrix = []
-            for item in answer.subjects(RDF.type, ECSDI.Producto):
-                product = [answer.value(subject=item, predicate=ECSDI.Marca),
-                           answer.value(subject=item, predicate=ECSDI.Modelo),
-                           answer.value(subject=item, predicate=ECSDI.Nombre),
-                           answer.value(subject=item, predicate=ECSDI.Precio)]
-                products_matrix.append(product)
+            """products_matrix = []
+            for item in respuesta.subjects(RDF.type, ECSDI.Producto):
+                product = [respuesta.value(subject=item, predicate=ECSDI.Marca),
+                           respuesta.value(subject=item, predicate=ECSDI.Modelo),
+                           respuesta.value(subject=item, predicate=ECSDI.Nombre),
+                           respuesta.value(subject=item, predicate=ECSDI.Precio)]
+                products_matrix.append(product)"""
 
-            return render_template('endSell.html', products=products_matrix)
+            return render_template('CompraRealizada.html', products=products_checked)
 
 
 @app.route("/retorna", methods=['GET', 'POST'])

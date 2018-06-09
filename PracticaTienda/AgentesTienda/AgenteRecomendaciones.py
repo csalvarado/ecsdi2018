@@ -28,7 +28,7 @@ __author__ = 'javier'
 
 # Configuration stuff
 hostname = socket.gethostname()
-port = 9010
+port = 9016
 
 agn = Namespace("http://www.agentes.org#")
 

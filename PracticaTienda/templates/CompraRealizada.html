@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/-c9bKgaRfC3Q/AAAAAAAAAAI/AAAAAAAAJUE/Eo2MLCqyiZs/s0-c-k-no-ns/photo.jpg">
+    <title>ECSDIshop | Cerca de productes</title>
+</head>
+<body>
+    <h1>Compra realizada correctamente</h1>
+    <br>
+    <table cellpadding="5px", border="2">
+        <tr>
+            <th><b>NOMBRE</b></th>
+            <th><b>MARCA</b></th>
+            <th><b>MODELO</b></th>
+            <th><b>PRECIO</b></th>
+        </tr>
+        {% for item in products %}
+            <tr>
+                {% for item_2 in item %}
+                    <td>{{ item_2 }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="./busqueda">Volver</a>
+</body>
+</html>
