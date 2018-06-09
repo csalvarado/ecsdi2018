@@ -8,16 +8,17 @@ import socket
 from multiprocessing import Process
 
 from flask import Flask, request
-from rdflib import Graph, Namespace
+from rdflib import Namespace, Graph
 
 from PracticaTienda.utils.ACLMessages import register_agent, get_message_properties, build_message
 from PracticaTienda.utils.Agent import Agent
 from PracticaTienda.utils.ExternalTransportAgent import ExternalTransportAgent
 from PracticaTienda.utils.FlaskServer import shutdown_server
 from PracticaTienda.utils.Logging import config_logger
-from PracticaTienda.utils.OntologyNamespaces import ECSDI, ACL
+from PracticaTienda.utils.OntoNamespaces import ACL
+from PracticaTienda.utils.OntologyNamespaces import ECSDI
 
-__author__ = 'amazdonde'
+__author__ = 'ECSDIshop'
 
 # Definimos los parametros de la linea de comandos
 parser = argparse.ArgumentParser()
@@ -35,7 +36,7 @@ args = parser.parse_args()
 
 # Configuration stuff
 if args.port is None:
-    port = 9020
+    port = 9031
 else:
     port = args.port
 
@@ -93,10 +94,7 @@ def register_message():
     :param gmess:
     :return:
     """
-
-    logger.info('Nos registramos')
-
-    gr = register_agent(ExternalTransportAgent1, ExternalTransportDirectory, agn.ExternalTransportAgent, get_count())
+    gr = register_agent(ExternalTransportAgent1, ExternalTransportDirectory, agn.ExternalTransportAgent1, get_count())
     return gr
 
 

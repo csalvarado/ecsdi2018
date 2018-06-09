@@ -6,7 +6,7 @@ from rdflib import Graph, Literal
 
 from ACLMessages import build_message
 from OntologyNamespaces import ECSDI, ACL
-from utils.Agent import Agent
+from PracticaTienda.utils.Agent import Agent
 
 
 def dateToMillis(date):

@@ -145,7 +145,8 @@ def comunicacion():
 
     logger.info('Respondemos a la peticion')
 
-    return None, 500
+    return gr.serialize(format='xml'), 200
+
     pass
 
 
@@ -185,7 +186,7 @@ def sendSell(gm, sell):
     gm.add((content, RDF.type, ECSDI.Enviar_venta))
     gm.add((content, ECSDI.identificador_Compra, URIRef(sell)))
 
-    centro_logistico = get_agent_info(agn.ProductsAgent, DirectoryAgent, AgenteComprador, get_n_message())
+    centro_logistico = get_agent_info(agn.AgenteCentroLogistico, DirectoryAgent, AgenteComprador, get_n_message())
 
     gr = send_message(
         build_message(gm, perf=ACL.request, sender=AgenteComprador.uri, receiver=centro_logistico.uri,

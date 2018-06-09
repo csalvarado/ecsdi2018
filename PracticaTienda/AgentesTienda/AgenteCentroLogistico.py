@@ -68,7 +68,7 @@ messages_cnt = 0
 
 # Datos del Agente
 
-AgenteCentroLogisitico = Agent('AgenteCentroLogistico',
+AgenteCentroLogistico = Agent('AgenteCentroLogistico',
                        agn.AgenteCentroLogistico,
                        'http://%s:%d/comm' % (hostname, port),
                        'http://%s:%d/Stop' % (hostname, port))
@@ -96,7 +96,7 @@ def get_n_message():
 
 def register_message():
     logger.info("Registrando Agente CentroLogistico...")
-    gr = register_agent(AgenteCentroLogisitico, DirectoryAgent, AgenteCentroLogisitico.uri, get_n_message())
+    gr = register_agent(AgenteCentroLogistico, DirectoryAgent, AgenteCentroLogistico.uri, get_n_message())
 
 
 @app.route("/comm")
@@ -116,14 +116,14 @@ def communication():
     # Comprobamos que sea un mensaje FIPA ACL
     if msgdic is None:
         # Si no es, respondemos que no hemos entendido el mensaje
-        gr = build_message(Graph(), ACL['not-understood'], sender=AgenteCentroLogisitico.uri, msgcnt=get_n_message())
+        gr = build_message(Graph(), ACL['not-understood'], sender=AgenteCentroLogistico.uri, msgcnt=get_n_message())
     else:
         # Obtenemos la performativa
         perf = msgdic['performative']
 
         if perf != ACL.request:
             # Si no es un request, respondemos que no hemos entendido el mensaje
-            gr = build_message(Graph(), ACL['not-understood'], sender=AgenteCentroLogisitico.uri, msgcnt=get_n_message())
+            gr = build_message(Graph(), ACL['not-understood'], sender=AgenteCentroLogistico.uri, msgcnt=get_n_message())
         else:
             # Extraemos el objeto del contenido que ha de ser una accion de la ontologia de acciones del agente
             # de registro
@@ -195,6 +195,19 @@ def obtainProducts(gm):
 
 def sendProducts(gr):
     logger.info('Enviamos los productos')
+
+    content = ECSDI['Enviar_lot' + str(get_n_message())]
+    gr.add((content, RDF.type, ECSDI.Enviar_lot))
+
+    subjectLoteProducto = ECSDI['Lote_producto' + str(random.randint(1, sys.float_info.max))]
+    gr.add((subjectLoteProducto, RDF.type, ECSDI.Lote_producto))
+    gr.add((subjectLoteProducto, ECSDI.Prioridad, Literal(1, datatype=XSD.integer)))
+
+    for item in gr.subjects(RDF.type, ECSDI.Producto):
+        gr.add((subjectLoteProducto, ECSDI.productos, URIRef(item)))
+
+    gr.add((content, ECSDI.a_enviar, URIRef(subjectLoteProducto)))
+
     logger.info('Se envia el lote de productos')
 
     date = dateToMillis(datetime.datetime.utcnow() + datetime.timedelta(days=9))
@@ -211,14 +224,14 @@ def obtainTotalWeight(urlSend):
     totalWeight = 0.0
 
     gSends = Graph()
-    gSends.parse(open('../data/enviaments'), format='turtle')
+    gSends.parse(open('../Datos/Envios'), format='turtle')
     productsArray = []
     for lote in gSends.objects(subject=urlSend, predicate=ECSDI.Envia):
         for producto in gSends.objects(subject=lote, predicate=ECSDI.productos):
             productsArray.append(producto)
 
     gProducts = Graph()
-    gProducts.parse(open('../data/productes'), format='turtle')
+    gProducts.parse(open('../Datos/productos'), format='turtle')
     for item in productsArray:
         totalWeight += float(gProducts.value(subject=item, predicate=ECSDI.Peso))
 
@@ -261,10 +274,10 @@ def requestTransport(date, peso):
     gr.add((content, ECSDI.Fecha, Literal(date, datatype=XSD.float)))
     gr.add((content, ECSDI.Peso_envio, Literal(peso, datatype=XSD.float)))
 
-    Negociador = get_agent_info(agn.AgenteNegociador, DirectoryAgent, AgenteCentroLogisitico, get_n_message())
+    Negociador = get_agent_info(agn.AgenteNegociador, DirectoryAgent, AgenteCentroLogistico, get_n_message())
 
     gr = send_message(
-        build_message(gr, perf=ACL.request, sender=AgenteCentroLogisitico.uri, receiver=Negociador.uri,
+        build_message(gr, perf=ACL.request, sender=AgenteCentroLogistico.uri, receiver=Negociador.uri,
                       msgcnt=get_n_message(),
                       content=content), Negociador.address)
 
