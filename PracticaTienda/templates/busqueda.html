@@ -8,6 +8,7 @@
 <body>
     <h1>Búsqueda de Productos</h1>
     <a href="javascript:history.back()">< Volver</a>
+    <div style="size: 15px; padding-top: 15px">Parametros para la búsqueda</div>
         <form method="post", style="margin-top: 10px">
             <input type="text" name="nombre" placeholder="Nombre..."/><br>
             <input type="text" name="marca" placeholder="Marca..."/><br>
@@ -17,7 +18,7 @@
         </form>
         {% if products %}
         <form method="post">
-            <table cellpadding="5px">
+            <table cellpadding="5px" border="2">
                 <tr>
                     <th><b>NOMBRE</b></th>
                     <th><b>MARCA</b></th>
