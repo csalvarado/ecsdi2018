@@ -289,14 +289,6 @@ def browser_cerca():
                               msgcnt=get_count(),
                               content=content), Comprador.address)
 
-            """products_matrix = []
-            for item in respuesta.subjects(RDF.type, ECSDI.Producto):
-                product = [respuesta.value(subject=item, predicate=ECSDI.Marca),
-                           respuesta.value(subject=item, predicate=ECSDI.Modelo),
-                           respuesta.value(subject=item, predicate=ECSDI.Nombre),
-                           respuesta.value(subject=item, predicate=ECSDI.Precio)]
-                products_matrix.append(product)"""
-
             return render_template('CompraRealizada.html', products=products_checked)
 
 

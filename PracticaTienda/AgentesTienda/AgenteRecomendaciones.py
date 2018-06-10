@@ -143,9 +143,11 @@ def comunicacion():
             accion = gm.value(subject=content, predicate=RDF.type)
 
             if accion == ECSDI.Peticion_Recomendados:
-
                 compras = get_all_sells()
-
+                if compras.__len__() == 0:
+                    gr = Graph()
+                    serialize = gr.serialize(format='xml')
+                    return serialize,200
                 gr = findRecProducts(compras)
 
                 logger.info('Respondemos a la peticion')
@@ -174,7 +176,6 @@ def findRecProducts(compras):
             ?producto default:Precio ?precio .
             ?producto default:Peso ?peso .
             FILTER("""
-
     bol = 0
     pos = 0;
     for row in compras:

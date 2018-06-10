@@ -137,7 +137,7 @@ def communication():
             if accion == ECSDI.Enviar_venta:
                 logger.info("Recibe comunicación del FinancialAgent")
                 products = obtainProducts(gm)
-                gr = sendProducts(products)
+                gr = create_and_sendProducts(products)
 
             elif accion == ECSDI.Recoger_devolucion:
                 date = dateToMillis(datetime.datetime.utcnow() + datetime.timedelta(days=9))
@@ -177,6 +177,36 @@ def stop():
     shutdown_server()
     return "Parando Servidor"
 
+#--------------------------PARA ENVIAR PRODUCTOS------------------------------------------
+def create_and_sendProducts(gr):
+    logger.info('Enviamos los productos')
+
+    content = ECSDI['Enviar_lot' + str(get_n_message())]
+    gr.add((content, RDF.type, ECSDI.Enviar_lot))
+
+    subjectLoteProducto = ECSDI['Lote_producto' + str(random.randint(1, sys.float_info.max))]
+    gr.add((subjectLoteProducto, RDF.type, ECSDI.Lote_producto))
+    gr.add((subjectLoteProducto, ECSDI.Prioridad, Literal(1, datatype=XSD.integer)))
+
+    for item in gr.subjects(RDF.type, ECSDI.Producto):
+        gr.add((subjectLoteProducto, ECSDI.productos, URIRef(item)))
+
+    gr.add((content, ECSDI.a_enviar, URIRef(subjectLoteProducto)))
+
+    # Se ha creado el envio de un lato de productos, ahora se procedede a negociar el envio y enviarlo
+
+    logger.info('Se envia el lote de productos')
+
+    date = dateToMillis(datetime.datetime.utcnow() + datetime.timedelta(days=9))
+    urlSend = writeSends(gr, date)
+
+    peso = obtenerPesoTotal(urlSend)
+    requestTransport(date, peso)
+    # faltaria mandar la fecha de entrega
+    gr = prepareSellResponse(urlSend)
+
+    return gr
+
 def obtainProducts(gm):
     logger.info("Obtenemos los productos")
 
@@ -204,34 +234,8 @@ def obtainProducts(gm):
 
     return products
 
-def sendProducts(gr):
-    logger.info('Enviamos los productos')
 
-    content = ECSDI['Enviar_lot' + str(get_n_message())]
-    gr.add((content, RDF.type, ECSDI.Enviar_lot))
-
-    subjectLoteProducto = ECSDI['Lote_producto' + str(random.randint(1, sys.float_info.max))]
-    gr.add((subjectLoteProducto, RDF.type, ECSDI.Lote_producto))
-    gr.add((subjectLoteProducto, ECSDI.Prioridad, Literal(1, datatype=XSD.integer)))
-
-    for item in gr.subjects(RDF.type, ECSDI.Producto):
-        gr.add((subjectLoteProducto, ECSDI.productos, URIRef(item)))
-
-    gr.add((content, ECSDI.a_enviar, URIRef(subjectLoteProducto)))
-
-    logger.info('Se envia el lote de productos')
-
-    date = dateToMillis(datetime.datetime.utcnow() + datetime.timedelta(days=9))
-    urlSend = writeSends(gr, date)
-
-    peso = obtainTotalWeight(urlSend)
-    requestTransport(date, peso)
-
-    gr = prepareSellResponse(urlSend)
-
-    return gr
-
-def obtainTotalWeight(urlSend):
+def obtenerPesoTotal(urlSend):
     totalWeight = 0.0
 
     gSends = Graph()
@@ -247,8 +251,6 @@ def obtainTotalWeight(urlSend):
         totalWeight += float(gProducts.value(subject=item, predicate=ECSDI.Peso))
 
     return totalWeight
-
-
 
 
 def dateToMillis(date):
@@ -270,6 +272,58 @@ def writeSends(gr, deliverDate):
 
     return subjectEnvio
 
+def requestTransport(date, peso):
+    logger.info('Pedimos el transporte')
+
+    # Content of the message
+    content = ECSDI['Peticion_de_transporte_' + str(get_n_message())]
+
+    # Graph creation
+    gr = Graph()
+    gr.add((content, RDF.type, ECSDI.Peticion_Transporte))
+
+    # Anadir fecha y peso
+    gr.add((content, ECSDI.Fecha, Literal(date, datatype=XSD.float)))
+    gr.add((content, ECSDI.Peso_envio, Literal(peso, datatype=XSD.float)))
+
+    Negociador = get_agent_info(agn.AgenteNegociador, DirectoryAgent, AgenteCentroLogistico, get_n_message())
+
+    gr = send_message(
+        build_message(gr, perf=ACL.request, sender=AgenteCentroLogistico.uri, receiver=Negociador.uri,
+                      msgcnt=get_n_message(),
+                      content=content), Negociador.address)
+
+
+def prepareSellResponse(urlSend):
+    g = Graph()
+
+    enviaments = Graph()
+    enviaments.parse(open('../Datos/Envios'), format='turtle')
+
+    urlProducts = []
+    for item in enviaments.objects(subject=urlSend, predicate=ECSDI.Envia):
+        for product in enviaments.objects(subject=item, predicate=ECSDI.productos):
+            urlProducts.append(product)
+
+    products = Graph()
+    products.parse(open('../Datos/productos'), format='turtle')
+
+    for item in urlProducts:
+        marca = products.value(subject=item, predicate=ECSDI.Marca)
+        modelo = products.value(subject=item, predicate=ECSDI.Modelo)
+        nombre = products.value(subject=item, predicate=ECSDI.Nombre)
+        precio = products.value(subject=item, predicate=ECSDI.Precio)
+
+        g.add((item, RDF.type, ECSDI.Producto))
+        g.add((item, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
+        g.add((item, ECSDI.Modelo, Literal(modelo, datatype=XSD.string)))
+        g.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+        g.add((item, ECSDI.Nombre, Literal(nombre, datatype=XSD.string)))
+
+    return g
+
+
+#--------------------------------------PARA LA DEVOLUCION DE PRODUCTOS-----------------------------------------------
 def crearEnvio(sellUrl, date):
     sendGraph = Graph()
 
@@ -311,56 +365,6 @@ def crearEnvio(sellUrl, date):
 
     return weight
 
-
-def requestTransport(date, peso):
-    logger.info('Pedimos el transporte')
-
-    # Content of the message
-    content = ECSDI['Peticiona_transport_' + str(get_n_message())]
-
-    # Graph creation
-    gr = Graph()
-    gr.add((content, RDF.type, ECSDI.Peticiona_transport))
-
-    # Anadir fecha y peso
-    gr.add((content, ECSDI.Fecha, Literal(date, datatype=XSD.float)))
-    gr.add((content, ECSDI.Peso_envio, Literal(peso, datatype=XSD.float)))
-
-    Negociador = get_agent_info(agn.AgenteNegociador, DirectoryAgent, AgenteCentroLogistico, get_n_message())
-
-    gr = send_message(
-        build_message(gr, perf=ACL.request, sender=AgenteCentroLogistico.uri, receiver=Negociador.uri,
-                      msgcnt=get_n_message(),
-                      content=content), Negociador.address)
-
-
-def prepareSellResponse(urlSend):
-    g = Graph()
-
-    enviaments = Graph()
-    enviaments.parse(open('../Datos/Envios'), format='turtle')
-
-    urlProducts = []
-    for item in enviaments.objects(subject=urlSend, predicate=ECSDI.Envia):
-        for product in enviaments.objects(subject=item, predicate=ECSDI.productos):
-            urlProducts.append(product)
-
-    products = Graph()
-    products.parse(open('../Datos/productos'), format='turtle')
-
-    for item in urlProducts:
-        marca = products.value(subject=item, predicate=ECSDI.Marca)
-        modelo = products.value(subject=item, predicate=ECSDI.Modelo)
-        nombre = products.value(subject=item, predicate=ECSDI.Nombre)
-        precio = products.value(subject=item, predicate=ECSDI.Precio)
-
-        g.add((item, RDF.type, ECSDI.Producto))
-        g.add((item, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
-        g.add((item, ECSDI.Modelo, Literal(modelo, datatype=XSD.string)))
-        g.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
-        g.add((item, ECSDI.Nombre, Literal(nombre, datatype=XSD.string)))
-
-    return g
 
 
 
