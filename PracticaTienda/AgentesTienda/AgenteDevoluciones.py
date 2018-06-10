@@ -15,6 +15,8 @@ Asume que el agente de registro esta en el puerto 9000
 """
 
 from __future__ import print_function
+
+import argparse
 from multiprocessing import Process, Queue
 import socket
 
@@ -23,12 +25,41 @@ from flask import Flask
 
 from PracticaTienda.utils.FlaskServer import shutdown_server
 from PracticaTienda.utils.Agent import Agent
-__author__ = 'javier'
+__author__ = 'Amazon V2'
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--open', help="Define si el servidor est abierto al exterior o no", action='store_true',
+                    default=False)
+parser.add_argument('--port', type=int, help="Puerto de comunicacion del agente")
+parser.add_argument('--dhost', default=socket.gethostname(), help="Host del agente de directorio")
+parser.add_argument('--dport', type=int, help="Puerto de comunicacion del agente de directorio")
+
+args = parser.parse_args()
 
 
 # Configuration stuff
+
+if args.port is None:
+    port = 9081
+else:
+    port = args.port
+
+if args.open is None:
+    hostname = '0.0.0.0'
+else:
+    hostname = socket.gethostname()
+
+if args.dport is None:
+    dport = 9000
+else:
+    dport = args.dport
+
+if args.dhost is None:
+    dhostname = socket.gethostname()
+else:
+    dhostname = args.dhost
 hostname = socket.gethostname()
-port = 9013
+port = 9050
 
 agn = Namespace("http://www.agentes.org#")
 
@@ -37,7 +68,7 @@ mss_cnt = 0
 
 # Datos del Agente
 
-AgentePersonal = Agent('AgenteSimple',
+AgentePersonal = Agent('AgenteDevoluciones',
                        agn.AgenteSimple,
                        'http://%s:%d/comm' % (hostname, port),
                        'http://%s:%d/Stop' % (hostname, port))
@@ -55,8 +86,12 @@ dsgraph = Graph()
 cola1 = Queue()
 
 # Flask stuff
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates')
 
+def get_count():
+    global messages_cnt
+    messages_cnt += 1
+    return messages_cnt
 
 @app.route("/comm")
 def comunicacion():

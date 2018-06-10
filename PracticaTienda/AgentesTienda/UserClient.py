@@ -268,7 +268,7 @@ def browser_retorna():
     if request.method == 'GET':
         logger.info('Mostramos las compras realizadas')
         count, counts = get_all_sells()
-        return render_template('retorna.html', compres=compres, count=count, sizes=counts)
+        return render_template('devolucion.html', compres=compres, count=count, sizes=counts)
     else:
         logger.info('Empezamos el proceso de devolucion')
         sells_checked = []
