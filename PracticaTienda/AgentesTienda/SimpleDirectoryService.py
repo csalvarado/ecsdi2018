@@ -210,7 +210,7 @@ def info():
     global dsgraph
     global mss_cnt
 
-    return render_template('info.html', nmess=mss_cnt, graph=dsgraph.serialize(format='xml'))
+    return render_template('info.html', nmess=mss_cnt, graph=dsgraph.serialize(format='turtle'))
 
 
 @app.route("/Stop")
