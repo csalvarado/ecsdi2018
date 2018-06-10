@@ -98,7 +98,7 @@ def register():
         logger.info('Peticion de registro')
 
         agn_add = gm.value(subject=content, predicate=DSO.Address)
-        agn_name = gm.value(subject=content, predicate=FOAF.Name)
+        agn_name = gm.value(subject=content, predicate=FOAF.name)
         agn_uri = gm.value(subject=content, predicate=DSO.Uri)
         agn_type = gm.value(subject=content, predicate=DSO.AgentType)
 
