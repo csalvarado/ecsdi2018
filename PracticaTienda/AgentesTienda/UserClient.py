@@ -86,7 +86,7 @@ dsgraph = Graph()
 product_list = []
 
 # Compras enconctrados
-compres = []
+compras = []
 
 
 def get_count():
@@ -264,16 +264,16 @@ def browser_cerca():
 
 @app.route("/devolucion", methods=['GET', 'POST'])
 def browser_retorna():
-    global compres
+    global compras
     if request.method == 'GET':
         logger.info('Mostramos las compras realizadas')
         count, counts = get_all_sells()
-        return render_template('devolucion.html', compres=compres, count=count, sizes=counts)
+        return render_template('devolucion.html', compres=compras, count=count, sizes=counts)
     else:
         logger.info('Empezamos el proceso de devolucion')
         sells_checked = []
         for item in request.form.getlist("checkbox"):
-            sells_checked.append(compres[int(item)][0])
+            sells_checked.append(compras[int(item)][0])
 
         logger.info("Creando la peticion de compra")
         g = Graph()
@@ -327,14 +327,14 @@ def agentbehavior1():
 
 def get_all_sells():
     # [0] = url / [1] = [{producte}] / [2] = precio_total
-    global compres
-    compres = []
+    global compras
+    compras = []
 
     biggest_sell = 0
     counts = []
 
     graph_compres = Graph()
-    graph_compres.parse(open('../data/compres'), format='turtle')
+    graph_compres.parse(open('../Datos/Compras'), format='turtle')
 
     for compraUrl in graph_compres.subjects(RDF.type, ECSDI.Compra):
         sell_count = 0
@@ -346,7 +346,7 @@ def get_all_sells():
         single_sell.append(products)
         for precio_total in graph_compres.objects(subject=compraUrl, predicate=ECSDI.Precio_total):
             single_sell.append(precio_total)
-        compres.append(single_sell)
+        compras.append(single_sell)
         counts.append(sell_count)
         if sell_count > biggest_sell:
             biggest_sell = sell_count
