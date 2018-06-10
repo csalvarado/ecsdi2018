@@ -136,12 +136,23 @@ def communication():
 
             if accion == ECSDI.Enviar_venta:
                 logger.info("Recibe comunicación del FinancialAgent")
-
-                #products = obtainProducts(gm)
-                #requestAvailability(products)
-
                 products = obtainProducts(gm)
                 gr = sendProducts(products)
+
+            elif accion == ECSDI.Recoger_devolucion:
+                date = dateToMillis(datetime.datetime.utcnow() + datetime.timedelta(days=9))
+                for item in gm.objects(subject=content, predicate=ECSDI.compra_a_devolver):
+                    peso = crearEnvio(item, date)
+                    requestTransport(date, peso)
+                    logger.info('Eliminamos la venta de nuestro registro')
+                    ventas = Graph()
+                    ventas.parse(open('../Datos/Compras'), format='turtle')
+                    ventas.remove((item, None, None))
+                    ventas.serialize(destination='../Datos/Compras', format='turtle')
+
+                gr = Graph()
+
+
 
             else:
                 gr = build_message(Graph(),
@@ -258,6 +269,47 @@ def writeSends(gr, deliverDate):
     gr.serialize(destination='../Datos/Envios', format='turtle')
 
     return subjectEnvio
+
+def crearEnvio(sellUrl, date):
+    sendGraph = Graph()
+
+    subjectEnvio = ECSDI['Envio_' + str(random.randint(1, sys.float_info.max))]
+    sendGraph.add((subjectEnvio, RDF.type, ECSDI.Envio))
+    sendGraph.add((subjectEnvio, ECSDI.Fecha_de_entrega, Literal(date, datatype=XSD.float)))
+
+    openGraph = Graph()
+    openGraph.parse(open('../Datos/Compras'), format='turtle')
+
+    subjectLote = ECSDI['Lote_producto' + str(random.randint(1, sys.float_info.max))]
+    sendGraph.add((subjectLote, RDF.type, ECSDI.Lote_producto))
+    sendGraph.add((subjectLote, ECSDI.Prioridad, Literal(1, datatype=XSD.integer)))
+
+    weight = 0.0
+    for item in openGraph.objects(subject=sellUrl, predicate=ECSDI.Productos):
+        marca = openGraph.value(subject=item, predicate=ECSDI.Marca)
+        modelo = openGraph.value(subject=item, predicate=ECSDI.Modelo)
+        nombre = openGraph.value(subject=item, predicate=ECSDI.Nombre)
+        precio = openGraph.value(subject=item, predicate=ECSDI.Precio)
+        peso = openGraph.value(subject=item, predicate=ECSDI.Peso)
+        weight += float(peso)
+
+        sendGraph.add((item, RDF.type, ECSDI.Producto))
+        sendGraph.add((item, ECSDI.Nombre, Literal(nombre, datatype=XSD.string)))
+        sendGraph.add((item, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
+        sendGraph.add((item, ECSDI.Modelo, Literal(modelo, datatype=XSD.string)))
+        sendGraph.add((item, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
+        sendGraph.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+
+        sendGraph.add((subjectLote, ECSDI.productos, URIRef(item)))
+
+    sendGraph.add((subjectEnvio, ECSDI.Envia, URIRef(subjectLote)))
+
+    g = Graph()
+    sendGraph += g.parse(open('../Datos/Envios'), format='turtle')
+
+    sendGraph.serialize(destination='../Datos/Envios', format='turtle')
+
+    return weight
 
 
 def requestTransport(date, peso):

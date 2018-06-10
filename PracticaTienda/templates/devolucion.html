@@ -3,37 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="https://lh3.googleusercontent.com/-c9bKgaRfC3Q/AAAAAAAAAAI/AAAAAAAAJUE/Eo2MLCqyiZs/s0-c-k-no-ns/photo.jpg">
-    <title>Amazdonde | Retorn de productes</title>
+    <title>ECSDIshop | Devolucion de productos</title>
 </head>
 <body>
-    <h1>Retorn de productes</h1>
+    <h1>Devolucion de productos</h1>
     <a href="javascript:history.back()">< Volver</a>
     <form method="post">
         <table cellpadding="5px", border="2">
             <tr>
-                <th></th>
-                <th><b>PRODUCTES</b></th>
+                <th><b>NºCOMPRA</b></th>
+                <th><b>PRODUCTOS</b></th>
                 {% for _ in range(count-1) %}
                     <th></th>
                 {% endfor %}
                 <th><b>PRECIO TOTAL</b></th>
                 <th></th>
             </tr>
-            {% for item in compres %}
+            {% for item in compras %}
                 <tr>
-                    <td><b>{{ compres.index(item) + 1 }}.</b></td>
+                    <td><b>{{ compras.index(item) + 1 }}.</b></td>
                     {% for item2 in item[1] %}
                         <td>{{ item2 }}</td>
                     {% endfor %}
-                    {% for _ in range(count - sizes[compres.index(item)]) %}
+                    {% for _ in range(count - sizes[compras.index(item)]) %}
                         <td></td>
                     {% endfor %}
                     <td>{{ item[2] }}</td>
-                    <td><input type="checkbox" name="checkbox" value="{{ compres.index(item) }}"></td>
+                    <td><input type="checkbox" name="checkbox" value="{{ compras.index(item) }}"></td>
                 </tr>
             {% endfor %}
         </table>
-        <input type="submit" name="submit" value="Retornar">
+        <input type="submit" name="submit" value="Devolver">
     </form>
 </body>
 </html>
