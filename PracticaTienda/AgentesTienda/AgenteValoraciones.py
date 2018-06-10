@@ -129,12 +129,12 @@ def comunicacion():
     #Comprobacion del mensaje
 
     if msgdic is None:
-        gr = build_message(Graph(), ACL['no_entendido'],sender=AgenteRecomendador.uri, msgcnt=get_count())
+        gr = build_message(Graph(), ACL['no_entendido'],sender=AgenteValoraciones.uri, msgcnt=get_count())
     else:
         performative = msgdic['performative']
 
         if performative != ACL.request:
-            gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteRecomendador.uri, msgcnt=get_count())
+            gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteValoraciones.uri, msgcnt=get_count())
 
         else:
             content = msgdic['content']
@@ -172,12 +172,14 @@ def findValProducts():
             ?producto default:Peso ?peso .
             FILTER("""
 
+    bol = 0
     for row in compras:
         for item in row[1]:
             if bol == 1:
-                query += """ && """
-            query += """str(?nombre) = '""" + item[0] + """'"""
+                query += """ || """
+            query += """str(?nombre) = '""" + item + """'"""
             bol = 1
+    query += """)}"""
 
 
     graph_query = graph.query(query)
