@@ -262,7 +262,7 @@ def browser_cerca():
             return render_template('CompraRealizada.html', products=products_checked)
 
 
-@app.route("/retorna", methods=['GET', 'POST'])
+@app.route("/devolucion", methods=['GET', 'POST'])
 def browser_retorna():
     global compres
     if request.method == 'GET':
