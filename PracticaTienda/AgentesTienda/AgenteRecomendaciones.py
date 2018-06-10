@@ -89,6 +89,8 @@ dsgraph = Graph()
 
 cola1 = Queue()
 
+
+
 # Flask stuff
 app = Flask(__name__, template_folder='../templates')
 
@@ -142,9 +144,9 @@ def comunicacion():
 
             if accion == ECSDI.Peticion_Recomendados:
 
-                get_all_sells()
+                compras = get_all_sells()
 
-                gr = findRecProducts()
+                gr = findRecProducts(compras)
 
                 logger.info('Respondemos a la peticion')
 
@@ -152,7 +154,7 @@ def comunicacion():
                 return serialize, 200
 
 
-def findRecProducts():
+def findRecProducts(compras):
     graph = Graph()
     ontologyFile = open('../Datos/productos')
     graph.parse(ontologyFile, format='turtle')
@@ -174,15 +176,20 @@ def findRecProducts():
             FILTER("""
 
     bol = 0
-
+    pos = 0;
     for row in compras:
         for item in row[1]:
             if bol == 1:
-                query += """ && """
-            query += """str(?marca) = '""" + item[0] + """'"""
-            query += """ && """
-            query += """?precio <= '""" + item[1] + """'"""
+                query += """ || """
+            if pos == 0:
+                query += """str(?marca) = '""" + item + """'"""
+                pos = 0
+            """elif pos == 1:
+                query += """#?precio <= '""" + item + """'"""
+                #pos = 0"""
+
             bol = 1
+    query += """  )}"""
 
 
     graph_query = graph.query(query)
@@ -219,9 +226,10 @@ def get_all_sells():
         products = []
         for productUrl in graph_compres.objects(subject=compraUrl, predicate=ECSDI.Productos):
             products.append(graph_compres.value(subject=productUrl, predicate=ECSDI.Marca))
-            products.append(graph_compres.value(subject=productUrl, predicate=ECSDI.Precio))
+            #products.append(graph_compres.value(subject=productUrl, predicate=ECSDI.Precio))
         single_sell.append(products)
         compras.append(single_sell)
+    return compras
 
 @app.route("/Stop")
 def stop():

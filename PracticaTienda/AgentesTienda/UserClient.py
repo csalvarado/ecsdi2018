@@ -86,6 +86,7 @@ dsgraph = Graph()
 
 # Productos enconctrados
 product_list = []
+product_list2 = []
 
 # Compras enconctrados
 compras = []
@@ -111,6 +112,7 @@ def browser_cerca():
     via un formulario
     """
     global product_list
+    global product_list2
     if request.method == 'GET':
         contentResult = ECSDI['Peticion_Recomendacion' + str(get_count())]
         gr = Graph();
@@ -123,14 +125,14 @@ def browser_cerca():
                           content=contentResult), Recomendador.address)
         index = 0
         subject_pos = {}
-        product_list = []
+        product_list2 = []
         for s, p, o in gr3:
             if s not in subject_pos:
                 subject_pos[s] = index
-                product_list.append({})
+                product_list2.append({})
                 index += 1
             if s in subject_pos:
-                subject_dict = product_list[subject_pos[s]]
+                subject_dict = product_list2[subject_pos[s]]
                 if p == RDF.type:
                     subject_dict['url'] = s
                 elif p == ECSDI.Marca:
@@ -143,9 +145,10 @@ def browser_cerca():
                     subject_dict['nombre'] = o
                 elif p == ECSDI.Peso:
                     subject_dict['peso'] = o
-                product_list[subject_pos[s]] = subject_dict
+                product_list2[subject_pos[s]] = subject_dict
 
-        return render_template('busqueda.html', productos_recomendados=product_list)
+
+        return render_template('busqueda.html', productos_recomendados=product_list2, products=None)
 
     elif request.method == 'POST':
         # Peticio de cerca
@@ -217,7 +220,7 @@ def browser_cerca():
                         subject_dict['peso'] = o
                     product_list[subject_pos[s]] = subject_dict
 
-            return render_template('busqueda.html', products=product_list)
+            return render_template('busqueda.html', products=product_list, productos_recomendados=product_list2)
 
         # --------------------------------------------------------------------------------------------------------------
 
