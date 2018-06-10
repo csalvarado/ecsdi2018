@@ -151,7 +151,7 @@ def comunicacion():
                         restricciones_vec['brand'] = marca
                     elif gm.value(subject=restriccion, predicate=RDF.type) == ECSDI.Restriccion_modelo:
                         modelo = gm.value(subject=restriccion, predicate=ECSDI.Modelo)
-                        logger.info('MODELO: ' + modelo)
+                        logger. info('MODELO: ' + modelo)
                         restricciones_vec['modelo'] = modelo
                     elif gm.value(subject=restriccion, predicate=RDF.type) == ECSDI.Rango_precio:
                         preu_max = gm.value(subject=restriccion, predicate=ECSDI.Precio_max)

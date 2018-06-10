@@ -23,7 +23,7 @@ import socket
 import argparse
 
 from flask import Flask, request, render_template
-from rdflib import Graph, RDF, Namespace
+from rdflib import Graph, RDF, Namespace, RDFS
 from rdflib.namespace import FOAF, RDFS
 
 from PracticaTienda.utils.OntoNamespaces import ACL, DSO
@@ -72,7 +72,7 @@ DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
                        'http://%s:%d/Register' % (hostname, port),
                        'http://%s:%d/Stop' % (hostname, port))
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates')
 mss_cnt = 0
 
 cola1 = Queue()  # Cola de comunicacion entre procesos
@@ -210,7 +210,7 @@ def info():
     global dsgraph
     global mss_cnt
 
-    return render_template('info.html', nmess=mss_cnt, graph=dsgraph.serialize(format='turtle'))
+    return render_template('info.html', nmess=mss_cnt, graph=dsgraph.serialize(format='xml'))
 
 
 @app.route("/Stop")
