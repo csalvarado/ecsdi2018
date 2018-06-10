@@ -79,6 +79,8 @@ DirectoryAgent = Agent('DirectoryAgent',
                        'http://%s:%d/Register' % (dhostname, dport),
                        'http://%s:%d/Stop' % (dhostname, dport))
 
+#identificacion agentes
+
 # Global dsgraph triplestore
 dsgraph = Graph()
 
@@ -108,10 +110,43 @@ def browser_cerca():
     Permite la comunicacion con el agente via un navegador
     via un formulario
     """
-
     global product_list
     if request.method == 'GET':
-        return render_template('busqueda.html', products=None)
+        contentResult = ECSDI['Peticion_Recomendacion' + str(get_count())]
+        gr = Graph();
+        gr.add((contentResult, RDF.type, ECSDI.Peticion_Recomendados))
+        Recomendador = get_agent_info(agn.AgenteRecomendador, DirectoryAgent, UserClient, get_count())
+
+        gr3 = send_message(
+            build_message(gr, perf=ACL.request, sender=UserClient.uri, receiver=Recomendador.uri,
+                          msgcnt=get_count(),
+                          content=contentResult), Recomendador.address)
+        index = 0
+        subject_pos = {}
+        product_list = []
+        for s, p, o in gr3:
+            if s not in subject_pos:
+                subject_pos[s] = index
+                product_list.append({})
+                index += 1
+            if s in subject_pos:
+                subject_dict = product_list[subject_pos[s]]
+                if p == RDF.type:
+                    subject_dict['url'] = s
+                elif p == ECSDI.Marca:
+                    subject_dict['marca'] = o
+                elif p == ECSDI.Modelo:
+                    subject_dict['modelo'] = o
+                elif p == ECSDI.Precio:
+                    subject_dict['precio'] = o
+                elif p == ECSDI.Nombre:
+                    subject_dict['nombre'] = o
+                elif p == ECSDI.Peso:
+                    subject_dict['peso'] = o
+                product_list[subject_pos[s]] = subject_dict
+
+        return render_template('busqueda.html', productos_recomendados=product_list)
+
     elif request.method == 'POST':
         # Peticio de cerca
         if request.form['submit'] == 'Buscar':
