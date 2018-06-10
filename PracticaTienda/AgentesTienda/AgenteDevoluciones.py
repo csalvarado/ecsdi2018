@@ -20,11 +20,15 @@ import argparse
 from multiprocessing import Process, Queue
 import socket
 
-from rdflib import Namespace, Graph
-from flask import Flask
+from rdflib import Namespace, Graph, logger, RDF
+from flask import Flask, request
 
+from PracticaTienda.utils.ACLMessages import build_message, get_message_properties, get_agent_info, send_message
 from PracticaTienda.utils.FlaskServer import shutdown_server
 from PracticaTienda.utils.Agent import Agent
+from PracticaTienda.utils.OntoNamespaces import ACL
+from PracticaTienda.utils.OntologyNamespaces import ECSDI
+
 __author__ = 'Amazon V2'
 
 parser = argparse.ArgumentParser()
@@ -40,7 +44,7 @@ args = parser.parse_args()
 # Configuration stuff
 
 if args.port is None:
-    port = 9081
+    port = 9050
 else:
     port = args.port
 
@@ -68,8 +72,8 @@ mss_cnt = 0
 
 # Datos del Agente
 
-AgentePersonal = Agent('AgenteDevoluciones',
-                       agn.AgenteSimple,
+AgenteDevoluciones = Agent('AgenteDevoluciones',
+                       agn.AgenteDevoluciones,
                        'http://%s:%d/comm' % (hostname, port),
                        'http://%s:%d/Stop' % (hostname, port))
 
@@ -95,12 +99,59 @@ def get_count():
 
 @app.route("/comm")
 def comunicacion():
-    """
-    Entrypoint de comunicacion
-    """
     global dsgraph
     global mss_cnt
-    pass
+    gr =  None
+    logger.info ('Peticion de info recibida')
+
+    # Extraemos el mensaje que nos envian
+    mensaje = request.args['content']
+    gm = Graph()
+    gm.parse(data=mensaje)
+
+    msgdic = get_message_properties(gm)
+
+    #Comprobacion del mensaje
+
+    if msgdic is None:
+        gr = build_message(Graph(), ACL['no_entendido'],sender=AgenteDevoluciones.uri, msgcnt=get_count())
+    else:
+        performative = msgdic['performative']
+
+        if performative != ACL.request:
+            gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteDevoluciones.uri, msgcnt=get_count())
+
+        else:
+
+            content = msgdic['content']
+            accion = gm.value(subject=content, predicate=RDF.type)
+            #peticion de devolucion
+            if accion == ECSDI.Peticion_retorno:
+                logger.info("He recibido la peticion de devolucion")
+
+                for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                    gm.remove((item, None, None))
+
+                gr = gm
+
+                financial = get_agent_info(agn.FinancialAgent, DirectoryAgent, AgenteDevoluciones, get_count())
+
+                gr = send_message(
+                    build_message(gr, perf=ACL.request, sender=AgenteDevoluciones.uri, receiver=financial.uri,
+                                  msgcnt=get_count(),
+                                  content=content), financial.address)
+
+                # No habia ninguna accion en el mensaje
+            else:
+                gr = build_message(Graph(),
+                                   ACL['not-understood'],
+                                   sender=DirectoryAgent.uri,
+                                   msgcnt=get_count())
+
+    logger.info('Respondemos a la peticion')
+
+    serialize = gr.serialize(format='xml')
+    return serialize, 200
 
 
 @app.route("/Stop")
