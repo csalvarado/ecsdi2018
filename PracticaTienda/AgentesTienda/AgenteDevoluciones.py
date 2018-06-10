@@ -127,7 +127,7 @@ def comunicacion():
             accion = gm.value(subject=content, predicate=RDF.type)
             #peticion de devolucion
             if accion == ECSDI.Peticion_retorno:
-                logger.info("He recibido la peticion de devolucion")
+                logger.info("Recibida una peticion de AgenteDevolucion")
 
                 for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
                     gm.remove((item, None, None))
