@@ -103,6 +103,8 @@ def get_count():
 def pagina_princiapl():
     return render_template('Initial_page.html')
 
+
+
 @app.route("/valoraciones" , methods=['GET', 'POST'])
 def browser_retorna2():
     global val_list

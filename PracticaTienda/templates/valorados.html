@@ -16,14 +16,16 @@
             <th><b>PRECIO</b></th>
             <th><b>PUNTAJE</b></th>
         </tr>
-        {% for item in products %}
-            <tr>
-                {% for item_2 in item %}
-                    <td>{{ item_2 }}</td>
-                {% endfor %}
-                <td> puntaje </td>
-            </tr>
-        {% endfor %}
+            {% for item in products %}
+                <tr>
+                    <td>{{ item.nombre }}</td>
+                    <td>{{ item.marca }}</td>
+                    <td>{{ item.modelo }}</td>
+                    <td>{{ item.precio }}</td>
+                    <td><input type="number" name="puntuacion" value="{{ 0 }}"></td>
+                    <td><input type="checkbox" name="puntuacion" value="{{ products.index(item) }}"></td>
+                </tr>
+            {% endfor %}
     </table>
     <br>
     <a href="./busqueda">Volver</a>
