@@ -87,6 +87,7 @@ dsgraph = Graph()
 # Productos enconctrados
 product_list = []
 product_list2 = []
+product_list3 = []
 
 # Compras enconctrados
 compras = []
@@ -107,9 +108,11 @@ def pagina_princiapl():
 
 
 @app.route("/valoraciones" , methods=['GET', 'POST'])
-def browser_retorna2():
+def browser_valorar():
     global val_list
+    global product_list3
     if request.method == 'GET':
+        product_list3 = []
         contentResult = ECSDI['Peticion_Valoracion' + str(get_count())]
         gr = Graph();
         gr.add((contentResult, RDF.type, ECSDI.Peticion_Valorados))
@@ -121,14 +124,13 @@ def browser_retorna2():
                               content=contentResult), Valorador.address)
         index = 0
         subject_pos = {}
-        product_list = []
         for s, p, o in gr4:
             if s not in subject_pos:
                 subject_pos[s] = index
-                product_list.append({})
+                product_list3.append({})
                 index += 1
             if s in subject_pos:
-                subject_dict = product_list[subject_pos[s]]
+                subject_dict = product_list3[subject_pos[s]]
                 if p == RDF.type:
                     subject_dict['url'] = s
                 elif p == ECSDI.Marca:
@@ -141,82 +143,55 @@ def browser_retorna2():
                     subject_dict['nombre'] = o
                 elif p == ECSDI.Peso:
                     subject_dict['peso'] = o
-                product_list[subject_pos[s]] = subject_dict
+                product_list3[subject_pos[s]] = subject_dict
 
-        return render_template('valorados.html', products=product_list)
+        return render_template('valorados.html', products=product_list3)
 
     elif request.method == 'POST':
         # Peticio de cerca
-        if request.form['submit'] == 'Buscar':
-            logger.info("Enviando peticion de busqueda")
+        if request.form['submit'] == 'Valorar':
+            products_checked = []
+            for item in request.form.getlist("checkbox"):
+                item_checked = []
+                item_map = product_list3[int(item)]
+                item_checked.append(item_map['marca'])
+                item_checked.append(item_map['modelo'])
+                item_checked.append(item_map['nombre'])
+                item_checked.append(item_map['precio'])
+                item_checked.append(item_map['url'])
+                item_checked.append(item_map['peso'])
+                item_checked.append(request.form.getlist("puntuacion")[int(item)])
+                products_checked.append(item_checked)
 
             # Content of the message
-            contentResult = ECSDI['Peticion_Busqueda' + str(get_count())]
+            content = ECSDI['Peticion_Valorar_' + str(get_count())]
 
             # Graph creation
             gr = Graph()
-            gr.add((contentResult, RDF.type, ECSDI.Peticion_Busqueda))
+            gr.add((content, RDF.type, ECSDI.Peticion_valorar))
 
-            # Add restriccio nom
-            nombre = request.form['nombre']
-            if nombre:
-                # Subject nom
-                subject_nom = ECSDI['RestriccionNombre' + str(get_count())]
-                gr.add((subject_nom, RDF.type, ECSDI.Restriccion_Nombre))
-                gr.add((subject_nom, ECSDI.name, Literal(nombre, datatype=XSD.string)))
-                # Add restriccio to content
-                gr.add((contentResult, ECSDI.Restricciones, URIRef(subject_nom)))
-            marca = request.form['marca']
-            if marca:
-                Sujeto_marca = ECSDI['Restriccion_Marca_' + str(get_count())]
-                gr.add((Sujeto_marca, RDF.type, ECSDI.Restriccion_Marca))
-                gr.add((Sujeto_marca, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
-                gr.add((contentResult, ECSDI.Restricciones, URIRef(Sujeto_marca)))
-            min_price = request.form['min_price']
-            max_price = request.form['max_price']
 
-            if min_price or max_price:
-                Sujeto_precios = ECSDI['Restriccion_Precios_' + str(get_count())]
-                gr.add((Sujeto_precios, RDF.type, ECSDI.Rango_precio))
-                if min_price:
-                    gr.add((Sujeto_precios, ECSDI.Precio_min, Literal(min_price)))
-                if max_price:
-                    gr.add((Sujeto_precios, ECSDI.Precio_max, Literal(max_price)))
-                gr.add((contentResult, ECSDI.Restricciones, URIRef(Sujeto_precios)))
+            for item in products_checked:
+                # Creacion del producto --------------------------------------------------------------------------------
+                subject_producto = item[4]
+                gr.add((subject_producto, RDF.type, ECSDI.Producto))
+                gr.add((subject_producto, ECSDI.Marca, Literal(item[0], datatype=XSD.string)))
+                gr.add((subject_producto, ECSDI.Modelo, Literal(item[1], datatype=XSD.string)))
+                gr.add((subject_producto, ECSDI.Nombre, Literal(item[2], datatype=XSD.string)))
+                gr.add((subject_producto, ECSDI.Precio, Literal(item[3], datatype=XSD.float)))
+                gr.add((subject_producto, ECSDI.Peso, Literal(item[5], datatype=XSD.float)))
+                gr.add((subject_producto,ECSDI.Valoracion,Literal(item[6], datatype=XSD.number)))
 
-            Buscador = get_agent_info(agn.AgenteBuscador, DirectoryAgent, UserClient, get_count())
+            gr.add((content, ECSDI.Productos, URIRef(subject_producto)))
 
-            gr2 = send_message(
-                build_message(gr, perf=ACL.request, sender=UserClient.uri, receiver=Buscador.uri,
-                                msgcnt=get_count(),
-                                content=contentResult), Buscador.address)
+            Valorador = get_agent_info(agn.AgenteValorador, DirectoryAgent, UserClient, get_count())
 
-            index = 0
-            subject_pos = {}
-            product_list = []
-            for s, p, o in gr2:
-                if s not in subject_pos:
-                    subject_pos[s] = index
-                    product_list.append({})
-                    index += 1
-                if s in subject_pos:
-                    subject_dict = product_list[subject_pos[s]]
-                    if p == RDF.type:
-                        subject_dict['url'] = s
-                    elif p == ECSDI.Marca:
-                        subject_dict['marca'] = o
-                    elif p == ECSDI.Modelo:
-                        subject_dict['modelo'] = o
-                    elif p == ECSDI.Precio:
-                        subject_dict['precio'] = o
-                    elif p == ECSDI.Nombre:
-                        subject_dict['nombre'] = o
-                    elif p == ECSDI.Peso:
-                        subject_dict['peso'] = o
-                    product_list[subject_pos[s]] = subject_dict
+            send_message(
+                build_message(gr, perf=ACL.request, sender=UserClient.uri, receiver=Valorador.uri,
+                              msgcnt=get_count(),
+                              content=content), Valorador.address)
 
-            return render_template('valorados.html', products=product_list)
-
+            return render_template('ValoracionFinalizada.html')
 
 
 @app.route("/busqueda", methods=['GET', 'POST'])

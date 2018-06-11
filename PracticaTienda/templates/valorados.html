@@ -8,6 +8,7 @@
 <body>
     <h1>Productos Valorados/ a valorar</h1>
     <br>
+    <form method="post">
     <table cellpadding="5px", border="2">
         <tr>
             <th><b>NOMBRE</b></th>
@@ -23,10 +24,12 @@
                     <td>{{ item.modelo }}</td>
                     <td>{{ item.precio }}</td>
                     <td><input type="number" name="puntuacion" value="{{ 0 }}"></td>
-                    <td><input type="checkbox" name="puntuacion" value="{{ products.index(item) }}"></td>
+                    <td><input type="checkbox" name="checkbox" value="{{ products.index(item) }}"></td>
                 </tr>
             {% endfor %}
     </table>
+    <input type="submit" name="submit" value="Valorar">
+    </form>
     <br>
     <a href="./busqueda">Volver</a>
 </body>

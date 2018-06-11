@@ -141,16 +141,29 @@ def comunicacion():
             accion = gm.value(subject=content, predicate=RDF.type)
 
             if accion == ECSDI.Peticion_Valorados:
-
                 get_all_sells()
-
                 gr = findValProducts()
-
                 logger.info('Respondemos a la peticion')
-
+                serialize = gr.serialize(format='xml')
+                return serialize, 200
+            elif accion == ECSDI.Peticion_valorar:
+                for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
+                    gm.remove((item, None, None))
+                for item in gm.subjects(RDF.type, ECSDI.Peticion_valorar):
+                    gm.remove((item, None, None))
+                guardarValoraciones(gm)
+                gr = Graph()
                 serialize = gr.serialize(format='xml')
                 return serialize, 200
 
+
+def guardarValoraciones(gm):
+    ontologyFile = open('../Datos/Valoraciones')
+    graph = Graph()
+    graph.parse(ontologyFile, format='turtle')
+    graph += gm
+    graph.serialize(destination='../Datos/Valoraciones', format="turtle")
+    pass
 
 def findValProducts():
     graph = Graph()
