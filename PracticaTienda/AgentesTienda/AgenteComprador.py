@@ -192,10 +192,7 @@ def sendSell(gm, sell):
         build_message(gm, perf=ACL.request, sender=AgenteComprador.uri, receiver=centro_logistico.uri,
                       msgcnt=get_n_message(),
                       content=content), centro_logistico.address)
-
     return gr
-
-
     pass
 
 

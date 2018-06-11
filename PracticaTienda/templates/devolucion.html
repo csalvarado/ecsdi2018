@@ -7,6 +7,7 @@
 <body>
     <h1>Devolucion de productos</h1>
     <a href="javascript:history.back()">< Volver</a>
+    {% if compras %}
     <form method="post">
         <table cellpadding="5px", border="2">
             <tr>
@@ -34,5 +35,6 @@
         </table>
         <input type="submit" name="submit" value="Devolver">
     </form>
+    {% endif %}
 </body>
 </html>

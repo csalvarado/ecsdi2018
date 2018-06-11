@@ -235,6 +235,7 @@ def browser_cerca():
     global product_list
     global product_list2
     if request.method == 'GET':
+
         contentResult = ECSDI['Peticion_Recomendacion' + str(get_count())]
         gr = Graph();
         gr.add((contentResult, RDF.type, ECSDI.Peticion_Recomendados))
@@ -248,6 +249,7 @@ def browser_cerca():
         subject_pos = {}
         product_list2 = []
         for s, p, o in gr3:
+
             if s not in subject_pos:
                 subject_pos[s] = index
                 product_list2.append({})
@@ -401,7 +403,7 @@ def browser_cerca():
 
             gr.add((subject_sobre, ECSDI.Precio_total, Literal(total_price, datatype=XSD.float)))
 
-            gr.add((content, ECSDI.Sobre, URIRef(subject_sobre)))
+            gr.add((content, ECSDI.Paquete_de_productos, URIRef(subject_sobre)))
 
             Comprador = get_agent_info(agn.AgenteComprador, DirectoryAgent, UserClient, get_count())
 
@@ -415,7 +417,7 @@ def browser_cerca():
 
 @app.route("/devolucion", methods=['GET', 'POST'])
 def browser_retorna():
-    global compras
+    global compras, count, counts
     if request.method == 'GET':
         logger.info('Mostramos las compras realizadas')
         count, counts = get_all_sells()
@@ -425,6 +427,9 @@ def browser_retorna():
         sells_checked = []
         for item in request.form.getlist("checkbox"):
             sells_checked.append(compras[int(item)][0])
+
+        if sells_checked.__len__() == 0:
+            return render_template('devolucion.html', compras=compras, count=count, sizes=counts)
 
         logger.info("Creando la peticion de compra")
         g = Graph()
@@ -459,7 +464,7 @@ def comunicacion():
     """
     Entrypoint de comunicacion del agente
     """
-    return "Hola"
+    return
 
 
 def tidyup():

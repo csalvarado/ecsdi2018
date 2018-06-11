@@ -142,6 +142,10 @@ def comunicacion():
 
             if accion == ECSDI.Peticion_Valorados:
                 get_all_sells()
+                if compras.__len__() == 0:
+                    g = Graph()
+                    serialize = g.serialize(format='xml')
+                    return serialize, 200
                 gr = findValProducts()
                 logger.info('Respondemos a la peticion')
                 serialize = gr.serialize(format='xml')

@@ -6,7 +6,7 @@
     <title>ECSDIshop | Valoración de productos</title>
 </head>
 <body>
-    <h1>Productos Valorados/ a valorar</h1>
+    <h1>Valorar Productos</h1>
     <br>
     <form method="post">
     {% if products %}
@@ -29,8 +29,8 @@
                 </tr>
             {% endfor %}
     </table>
-    {% endif %}
     <input type="submit" name="submit" value="Valorar">
+    {% endif %}
     </form>
     <br>
     <a href="./">Volver</a>
