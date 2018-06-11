@@ -166,7 +166,6 @@ def browser_valorar():
                 products_checked.append(item_checked)
             if products_checked.__len__() > 0:
 
-
                 # Content of the message
                 content = ECSDI['Peticion_Valorar_' + str(get_count())]
 
@@ -195,6 +194,7 @@ def browser_valorar():
                                   msgcnt=get_count(),
                                   content=content), Valorador.address)
 
+                product_list4 = []
                 index = 0
                 subject_pos = {}
                 for s, p, o in gr5:
@@ -220,7 +220,7 @@ def browser_valorar():
                             subject_dict['puntuacion'] = o
                         product_list4[subject_pos[s]] = subject_dict
 
-                return render_template('valorados.html',products=product_list4)
+                return render_template('ValoracionFinalizada.html',products=product_list4)
             else:
                 return render_template('valorados.html', products=product_list3)
 
@@ -345,11 +345,22 @@ def browser_cerca():
 
             return render_template('busqueda.html', products=product_list, productos_recomendados=product_list2)
 
-        # --------------------------------------------------------------------------------------------------------------
 
         # Peticion de compra
         elif request.form['submit'] == 'Comprar':
             products_checked = []
+            products_checked2 = []
+
+            for item in request.form.getlist("checkbox"):
+                item_checked = []
+                item_map = product_list[int(item)]
+                item_checked.append(item_map['marca'])
+                item_checked.append(item_map['modelo'])
+                item_checked.append(item_map['nombre'])
+                item_checked.append(item_map['precio'])
+                item_checked.append(item_map['peso'])
+                products_checked2.append(item_checked)
+
             for item in request.form.getlist("checkbox"):
                 item_checked = []
                 item_map = product_list[int(item)]
@@ -360,6 +371,11 @@ def browser_cerca():
                 item_checked.append(item_map['url'])
                 item_checked.append(item_map['peso'])
                 products_checked.append(item_checked)
+
+            if products_checked2.__len__() == 0:
+                return render_template('busqueda.html', products=product_list, productos_recomendados=product_list2)
+
+
 
             logger.info("Creando la peticion de compra")
 
@@ -412,7 +428,7 @@ def browser_cerca():
                               msgcnt=get_count(),
                               content=content), Comprador.address)
 
-            return render_template('CompraRealizada.html', products=products_checked)
+            return render_template('CompraRealizada.html', products=products_checked2)
 
 
 @app.route("/devolucion", methods=['GET', 'POST'])
