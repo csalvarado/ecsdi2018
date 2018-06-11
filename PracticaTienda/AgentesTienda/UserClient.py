@@ -88,6 +88,7 @@ dsgraph = Graph()
 product_list = []
 product_list2 = []
 product_list3 = []
+product_list4 = []
 
 # Compras enconctrados
 compras = []
@@ -110,7 +111,7 @@ def pagina_princiapl():
 @app.route("/valoraciones" , methods=['GET', 'POST'])
 def browser_valorar():
     global val_list
-    global product_list3
+    global product_list3, product_list4
     if request.method == 'GET':
         product_list3 = []
         contentResult = ECSDI['Peticion_Valoracion' + str(get_count())]
@@ -148,6 +149,7 @@ def browser_valorar():
         return render_template('valorados.html', products=product_list3)
 
     elif request.method == 'POST':
+        product_list4 = []
         # Peticio de cerca
         if request.form['submit'] == 'Valorar':
             products_checked = []
@@ -162,36 +164,66 @@ def browser_valorar():
                 item_checked.append(item_map['peso'])
                 item_checked.append(request.form.getlist("puntuacion")[int(item)])
                 products_checked.append(item_checked)
-
-            # Content of the message
-            content = ECSDI['Peticion_Valorar_' + str(get_count())]
-
-            # Graph creation
-            gr = Graph()
-            gr.add((content, RDF.type, ECSDI.Peticion_valorar))
+            if products_checked.__len__() > 0:
 
 
-            for item in products_checked:
-                # Creacion del producto --------------------------------------------------------------------------------
-                subject_producto = item[4]
-                gr.add((subject_producto, RDF.type, ECSDI.Producto))
-                gr.add((subject_producto, ECSDI.Marca, Literal(item[0], datatype=XSD.string)))
-                gr.add((subject_producto, ECSDI.Modelo, Literal(item[1], datatype=XSD.string)))
-                gr.add((subject_producto, ECSDI.Nombre, Literal(item[2], datatype=XSD.string)))
-                gr.add((subject_producto, ECSDI.Precio, Literal(item[3], datatype=XSD.float)))
-                gr.add((subject_producto, ECSDI.Peso, Literal(item[5], datatype=XSD.float)))
-                gr.add((subject_producto,ECSDI.Valoracion,Literal(item[6], datatype=XSD.number)))
+                # Content of the message
+                content = ECSDI['Peticion_Valorar_' + str(get_count())]
 
-            gr.add((content, ECSDI.Productos, URIRef(subject_producto)))
+                # Graph creation
+                gr = Graph()
+                gr.add((content, RDF.type, ECSDI.Peticion_valorar))
 
-            Valorador = get_agent_info(agn.AgenteValorador, DirectoryAgent, UserClient, get_count())
 
-            send_message(
-                build_message(gr, perf=ACL.request, sender=UserClient.uri, receiver=Valorador.uri,
-                              msgcnt=get_count(),
-                              content=content), Valorador.address)
+                for item in products_checked:
+                    # Creacion del producto --------------------------------------------------------------------------------
+                    subject_producto = item[4]
+                    gr.add((subject_producto, RDF.type, ECSDI.Producto))
+                    gr.add((subject_producto, ECSDI.Marca, Literal(item[0], datatype=XSD.string)))
+                    gr.add((subject_producto, ECSDI.Modelo, Literal(item[1], datatype=XSD.string)))
+                    gr.add((subject_producto, ECSDI.Nombre, Literal(item[2], datatype=XSD.string)))
+                    gr.add((subject_producto, ECSDI.Precio, Literal(item[3], datatype=XSD.float)))
+                    gr.add((subject_producto, ECSDI.Peso, Literal(item[5], datatype=XSD.float)))
+                    gr.add((subject_producto,ECSDI.Valoracion,Literal(item[6], datatype=XSD.number)))
 
-            return render_template('ValoracionFinalizada.html')
+                gr.add((content, ECSDI.Productos, URIRef(subject_producto)))
+
+                Valorador = get_agent_info(agn.AgenteValorador, DirectoryAgent, UserClient, get_count())
+
+                gr5 = send_message(
+                    build_message(gr, perf=ACL.request, sender=UserClient.uri, receiver=Valorador.uri,
+                                  msgcnt=get_count(),
+                                  content=content), Valorador.address)
+
+                index = 0
+                subject_pos = {}
+                for s, p, o in gr5:
+                    if s not in subject_pos:
+                        subject_pos[s] = index
+                        product_list4.append({})
+                        index += 1
+                    if s in subject_pos:
+                        subject_dict = product_list4[subject_pos[s]]
+                        if p == RDF.type:
+                            subject_dict['url'] = s
+                        elif p == ECSDI.Marca:
+                            subject_dict['marca'] = o
+                        elif p == ECSDI.Modelo:
+                            subject_dict['modelo'] = o
+                        elif p == ECSDI.Precio:
+                            subject_dict['precio'] = o
+                        elif p == ECSDI.Nombre:
+                            subject_dict['nombre'] = o
+                        elif p == ECSDI.Peso:
+                            subject_dict['peso'] = o
+                        elif p == ECSDI.Valoracion:
+                            subject_dict['puntuacion'] = o
+                        product_list4[subject_pos[s]] = subject_dict
+
+                return render_template('valorados.html',products=product_list4)
+            else:
+                return render_template('valorados.html', products=product_list3)
+
 
 
 @app.route("/busqueda", methods=['GET', 'POST'])

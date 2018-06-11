@@ -152,8 +152,7 @@ def comunicacion():
                 for item in gm.subjects(RDF.type, ECSDI.Peticion_valorar):
                     gm.remove((item, None, None))
                 guardarValoraciones(gm)
-                gr = Graph()
-                serialize = gr.serialize(format='xml')
+                serialize = gm.serialize(format='xml')
                 return serialize, 200
 
 
