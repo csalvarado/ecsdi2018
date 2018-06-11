@@ -154,7 +154,7 @@ def comunicacion():
             accion = gm.value(subject=content, predicate=RDF.type)
 
             # Accion de busqueda
-            if accion == ECSDI.Peticiona_transport:
+            if accion == ECSDI.Peticion_Transporte:
                 respondePeticion(gm, content)
                 gr = Graph()
 

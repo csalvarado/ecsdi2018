@@ -194,22 +194,15 @@ def create_and_sendProducts(gr):
     gr.add((content, ECSDI.a_enviar, URIRef(subjectLoteProducto)))
 
     # Se ha creado el envio de un lato de productos, ahora se procedede a negociar el envio y enviarlo
-
     logger.info('Se envia el lote de productos')
-
     date = dateToMillis(datetime.datetime.utcnow() + datetime.timedelta(days=9))
-    urlSend = writeSends(gr, date)
-
-    peso = obtenerPesoTotal(urlSend)
+    urlEnvio = writeSends(gr, date)
+    peso = obtenerPesoTotal(urlEnvio)
     requestTransport(date, peso)
-    # faltaria mandar la fecha de entrega
-    gr = prepareSellResponse(urlSend)
-
+    gr = prepareSellResponse(urlEnvio)
     return gr
 
 def obtainProducts(gm):
-    logger.info("Obtenemos los productos")
-
     products = Graph()
 
     sell = None
@@ -235,22 +228,23 @@ def obtainProducts(gm):
     return products
 
 
-def obtenerPesoTotal(urlSend):
-    totalWeight = 0.0
+def obtenerPesoTotal(urlEnvio):
+    peso_Total = 0.0
 
     gSends = Graph()
     gSends.parse(open('../Datos/Envios'), format='turtle')
     productsArray = []
-    for lote in gSends.objects(subject=urlSend, predicate=ECSDI.Envia):
+    for lote in gSends.objects(subject=urlEnvio, predicate=ECSDI.Envia):
         for producto in gSends.objects(subject=lote, predicate=ECSDI.productos):
             productsArray.append(producto)
+
 
     gProducts = Graph()
     gProducts.parse(open('../Datos/productos'), format='turtle')
     for item in productsArray:
-        totalWeight += float(gProducts.value(subject=item, predicate=ECSDI.Peso))
+        peso_Total += float(gProducts.value(subject=item, predicate=ECSDI.Peso))
 
-    return totalWeight
+    return peso_Total
 
 
 def dateToMillis(date):
@@ -294,14 +288,14 @@ def requestTransport(date, peso):
                       content=content), Negociador.address)
 
 
-def prepareSellResponse(urlSend):
+def prepareSellResponse(urlEnvio):
     g = Graph()
 
     enviaments = Graph()
     enviaments.parse(open('../Datos/Envios'), format='turtle')
 
     urlProducts = []
-    for item in enviaments.objects(subject=urlSend, predicate=ECSDI.Envia):
+    for item in enviaments.objects(subject=urlEnvio, predicate=ECSDI.Envia):
         for product in enviaments.objects(subject=item, predicate=ECSDI.productos):
             urlProducts.append(product)
 
@@ -325,45 +319,45 @@ def prepareSellResponse(urlSend):
 
 #--------------------------------------PARA LA DEVOLUCION DE PRODUCTOS-----------------------------------------------
 def crearEnvio(sellUrl, date):
-    sendGraph = Graph()
+    enviarGrafo = Graph()
 
     subjectEnvio = ECSDI['Envio_' + str(random.randint(1, sys.float_info.max))]
-    sendGraph.add((subjectEnvio, RDF.type, ECSDI.Envio))
-    sendGraph.add((subjectEnvio, ECSDI.Fecha_de_entrega, Literal(date, datatype=XSD.float)))
+    enviarGrafo.add((subjectEnvio, RDF.type, ECSDI.Envio))
+    enviarGrafo.add((subjectEnvio, ECSDI.Fecha_de_entrega, Literal(date, datatype=XSD.float)))
 
     openGraph = Graph()
     openGraph.parse(open('../Datos/Compras'), format='turtle')
 
     subjectLote = ECSDI['Lote_producto' + str(random.randint(1, sys.float_info.max))]
-    sendGraph.add((subjectLote, RDF.type, ECSDI.Lote_producto))
-    sendGraph.add((subjectLote, ECSDI.Prioridad, Literal(1, datatype=XSD.integer)))
+    enviarGrafo.add((subjectLote, RDF.type, ECSDI.Lote_producto))
+    enviarGrafo.add((subjectLote, ECSDI.Prioridad, Literal(1, datatype=XSD.integer)))
 
-    weight = 0.0
+    peso = 0.0
     for item in openGraph.objects(subject=sellUrl, predicate=ECSDI.Productos):
         marca = openGraph.value(subject=item, predicate=ECSDI.Marca)
         modelo = openGraph.value(subject=item, predicate=ECSDI.Modelo)
         nombre = openGraph.value(subject=item, predicate=ECSDI.Nombre)
         precio = openGraph.value(subject=item, predicate=ECSDI.Precio)
         peso = openGraph.value(subject=item, predicate=ECSDI.Peso)
-        weight += float(peso)
+        peso += float(peso)
 
-        sendGraph.add((item, RDF.type, ECSDI.Producto))
-        sendGraph.add((item, ECSDI.Nombre, Literal(nombre, datatype=XSD.string)))
-        sendGraph.add((item, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
-        sendGraph.add((item, ECSDI.Modelo, Literal(modelo, datatype=XSD.string)))
-        sendGraph.add((item, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
-        sendGraph.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
+        enviarGrafo.add((item, RDF.type, ECSDI.Producto))
+        enviarGrafo.add((item, ECSDI.Nombre, Literal(nombre, datatype=XSD.string)))
+        enviarGrafo.add((item, ECSDI.Marca, Literal(marca, datatype=XSD.string)))
+        enviarGrafo.add((item, ECSDI.Modelo, Literal(modelo, datatype=XSD.string)))
+        enviarGrafo.add((item, ECSDI.Peso, Literal(peso, datatype=XSD.float)))
+        enviarGrafo.add((item, ECSDI.Precio, Literal(precio, datatype=XSD.float)))
 
-        sendGraph.add((subjectLote, ECSDI.productos, URIRef(item)))
+        enviarGrafo.add((subjectLote, ECSDI.productos, URIRef(item)))
 
-    sendGraph.add((subjectEnvio, ECSDI.Envia, URIRef(subjectLote)))
+    enviarGrafo.add((subjectEnvio, ECSDI.Envia, URIRef(subjectLote)))
 
     g = Graph()
-    sendGraph += g.parse(open('../Datos/Envios'), format='turtle')
+    enviarGrafo += g.parse(open('../Datos/Envios'), format='turtle')
 
-    sendGraph.serialize(destination='../Datos/Envios', format='turtle')
+    enviarGrafo.serialize(destination='../Datos/Envios', format='turtle')
 
-    return weight
+    return peso
 
 
 
