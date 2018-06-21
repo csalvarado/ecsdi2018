@@ -39,6 +39,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--open', help="Define si el servidor est abierto al exterior o no", action='store_true',
                     default=False)
 parser.add_argument('--port', type=int, help="Puerto de comunicacion del agente")
+parser.add_argument('--host', default=socket.gethostname(), help="Host del agente")
+
 
 # Logging
 logger = config_logger(level=1)
@@ -55,7 +57,7 @@ else:
 if args.open:
     hostname = '0.0.0.0'
 else:
-    hostname = socket.gethostname()
+    hostname = args.host
 
 # Directory Service Graph
 dsgraph = Graph()

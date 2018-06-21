@@ -29,6 +29,8 @@ parser.add_argument('--open', help="Define si el servidor est abierto al exterio
 parser.add_argument('--port', type=int, help="Puerto de comunicacion del agente")
 parser.add_argument('--dhost', default=socket.gethostname(), help="Host del agente de directorio")
 parser.add_argument('--dport', type=int, help="Puerto de comunicacion del agente de directorio")
+parser.add_argument('--host', default=socket.gethostname(), help="Host del agente")
+
 
 # Logging
 logger = config_logger(level=1)
