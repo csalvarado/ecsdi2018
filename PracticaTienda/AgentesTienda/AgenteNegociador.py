@@ -156,6 +156,7 @@ def comunicacion():
             # Accion de busqueda
             if accion == ECSDI.Peticion_Transporte:
                 logger.info("Negociamos con los transportistas")
+                print("Negociamos con los transportistas")
                 respondePeticion(gm, content)
                 gr = Graph()
 

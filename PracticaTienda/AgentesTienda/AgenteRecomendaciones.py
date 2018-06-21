@@ -144,6 +144,7 @@ def comunicacion():
 
             if accion == ECSDI.Peticion_Recomendados:
                 logger.info("Enviamos una serie de productos recomendados")
+                print("Enviamos una serie de productos recomendados")
                 compras = get_all_sells()
                 if compras.__len__() == 0:
                     gr = Graph()

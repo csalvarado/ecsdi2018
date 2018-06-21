@@ -144,6 +144,7 @@ def comunicacion():
                 gr = recordExternalProduct(gm)
 
     logger.info('Respondemos a la peticion')
+    print('Productos externos publicados')
 
     return gr.serialize(format='xml'), 200
 

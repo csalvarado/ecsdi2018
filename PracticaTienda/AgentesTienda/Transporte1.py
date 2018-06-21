@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+
 """
 filename: UserPersonalAgent
 Agent que implementa la interacció amb l'usuari
@@ -142,19 +144,23 @@ def comunicacion():
     else:
         if msgdic['performative'] == ACL['accept-proposal']:
             logger.info('Nuestra oferta ha sido aceptada')
+            print('Nuestra oferta ha sido aceptada')
             return build_message(Graph(), perf=ACL.inform, sender=ExternalTransportAgent1.uri).serialize()
 
         if msgdic['performative'] == ACL['reject-proposal']:
             logger.info('La oferta ha sido rechazada')
+            print('La oferta ha sido rechazada')
             ExternalTransportAgent1.reset()
             return build_message(Graph(), perf=ACL.inform, sender=ExternalTransportAgent1.uri).serialize()
 
         if msgdic['performative'] == ACL['counter-proposal']:
-            logger.info("Transporte 1 recibe una contraoferta ")
+            logger.info('Transporte 1 recibe una contraoferta')
+            print('Transporte 1 recibe una contraoferta')
             return counterproposal(gm, msgdic['content']).serialize()
 
         if msgdic['performative'] == ACL['call-for-proposal']:
             logger.info('Tranporte 1 recibe una solicitud de propuestas')
+            print('Transporte 1 recibe una solicitud de propuestas')
             return proposal(gm, msgdic['content']).serialize()
 
 

@@ -133,6 +133,7 @@ def comunicacion():
             # peticion de devolucion
             if accion == ECSDI.Peticion_retorno:
                 logger.info("Recibida una peticion de retorno en AgenteDevoluciones")
+                print("Recibida una peticion de retorno en AgenteDevoluciones")
 
                 for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
                     gm.remove((item, None, None))
@@ -173,6 +174,7 @@ def stop():
 
 def payDelivery():
     logger.info('Transferencia aceptada')
+    print('Transferencia aceptada')
     pass
 
 

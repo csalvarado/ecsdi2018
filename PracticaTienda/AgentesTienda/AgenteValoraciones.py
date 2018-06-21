@@ -148,9 +148,11 @@ def comunicacion():
                     return serialize, 200
                 gr = findValProducts()
                 logger.info('Respondemos a la peticion')
+                print('Respondemos a la peticion')
                 serialize = gr.serialize(format='xml')
                 return serialize, 200
             elif accion == ECSDI.Peticion_valorar:
+                print('Valoramos los productos')
                 for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
                     gm.remove((item, None, None))
                 for item in gm.subjects(RDF.type, ECSDI.Peticion_valorar):

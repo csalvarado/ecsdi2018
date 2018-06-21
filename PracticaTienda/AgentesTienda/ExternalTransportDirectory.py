@@ -1,4 +1,4 @@
-
+from __future__ import print_function
 import argparse
 import socket
 from multiprocessing import Process, Queue
@@ -88,6 +88,7 @@ def register():
         dsgraph.add((agn_uri, DSO.AgentType, agn_type))
 
         logger.info('Registrado agente: ' + agn_name + ' - tipus:' + agn_type)
+        print('Registrado agente: ' + agn_name + ' - tipus:' + agn_type)
 
         # Generamos un mensaje de respuesta
         return build_message(Graph(),

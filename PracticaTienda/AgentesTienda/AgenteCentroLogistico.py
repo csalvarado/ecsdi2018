@@ -136,11 +136,13 @@ def communication():
 
             if accion == ECSDI.Enviar_venta:
                 logger.info('Recibimos la peticion para enviar la venta')
+                print('Recibimos la peticion para enviar la venta')
                 products = obtainProducts(gm)
                 gr = create_and_sendProducts(products)
 
             elif accion == ECSDI.Recoger_devolucion:
                 logger.info('Recibimos la peticion de recoger la devolucion, para ello contratamos un envio')
+                print('Recibimos la peticion de recoger la devolucion, para ello contratamos un envio')
                 date = dateToMillis(datetime.datetime.utcnow() + datetime.timedelta(days=9))
                 for item in gm.objects(subject=content, predicate=ECSDI.compra_a_devolver):
                     peso = crearEnvio(item, date)
@@ -196,6 +198,7 @@ def create_and_sendProducts(gr):
 
     # Se ha creado el envio de un lato de productos, ahora se procedede a negociar el envio y enviarlo
     logger.info('Se envia el lote de productos')
+    print('Se envia el lote de productos')
     date = dateToMillis(datetime.datetime.utcnow() + datetime.timedelta(days=9))
     urlEnvio = writeSends(gr, date)
     peso = obtenerPesoTotal(urlEnvio)

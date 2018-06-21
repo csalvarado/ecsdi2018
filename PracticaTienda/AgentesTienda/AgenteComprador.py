@@ -128,6 +128,7 @@ def comunicacion():
             content = msgdic['content']
             accion = gm.value(subject=content, predicate=RDF.type)
             logger.info('Recibida una petición en AgenteComprador')
+            print('Recibida una petición en AgenteComprador')
             if accion == ECSDI.Peticion_compra:
                 logger.info('Recibida peticion compra')
                 compra = None
@@ -164,6 +165,7 @@ def stop():
 
 def payDelivery(compra_url):
     logger.info('Se acepta la transferencia de' + compra_url)
+    print('Se acepta la transferencia de' + compra_url)
 
 
 def registerSells(gm):
@@ -181,6 +183,7 @@ def registerSells(gm):
 def sendSell(gm, sell):
 
     logger.info('Nos comunicamos con el Centro Logistico')
+    print('Nos comunicamos con el Centro Logistico')
     content = ECSDI['Enviar_venta_' + str(get_n_message())]
 
     gm.add((content, RDF.type, ECSDI.Enviar_venta))

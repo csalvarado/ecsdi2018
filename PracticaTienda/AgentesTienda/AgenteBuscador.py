@@ -143,6 +143,7 @@ def comunicacion():
 
             if accion == ECSDI.Peticion_Busqueda:
                 logger.info('Agente Buscador recibe una peticion de búsqueda, la tratamos')
+                print('Agente Buscador recibe una peticion de búsqueda, la tratamos')
                 restricciones = gm.objects(content, ECSDI.Restricciones)
                 restricciones_vec = {}
                 for restriccion in restricciones:
