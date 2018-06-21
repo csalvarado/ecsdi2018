@@ -26,7 +26,8 @@ import socket
 from rdflib import Namespace, Graph, logger, RDF, XSD, Literal
 from flask import Flask, request
 
-from PracticaTienda.utils.ACLMessages import get_message_properties, build_message, register_agent
+from PracticaTiendaDistributed.utils.ACLMessages import get_agent_info, register_agent, get_bag_agent_info, \
+    send_message, build_message, get_message_properties
 from PracticaTienda.utils.FlaskServer import shutdown_server
 from PracticaTienda.utils.Agent import Agent
 from PracticaTienda.utils.OntoNamespaces import ACL
@@ -49,7 +50,7 @@ if args.port is None:
 else:
     port = args.port
 
-if args.open is None:
+if args.open:
     hostname = '0.0.0.0'
 else:
     hostname = socket.gethostname()
@@ -80,8 +81,8 @@ AgenteBuscador = Agent('Buscador',
 # Directory agent address
 DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
-                       'http://%s:9000/Register' % hostname,
-                       'http://%s:9000/Stop' % hostname)
+                       'http://%s:%d/Register' % (dhostname, dport),
+                       'http://%s:%d/Stop' % (dhostname, dport))
 
 
 # Global triplestore graph

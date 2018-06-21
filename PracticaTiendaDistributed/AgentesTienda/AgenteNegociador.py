@@ -80,10 +80,10 @@ AgenteNegociador = Agent('AgenteNegociador',
                        'http://%s:%d/Stop' % (hostname, port))
 
 # Directory agent address
-ExternalTransportDirectory = Agent('ExternalTransportDirectory',
-                                   agn.Directory,
-                                   'http://%s:8000/Register' % hostname,
-                                   'http://%s:8000/Stop' % hostname)
+DirectoryAgent = Agent('DirectoryAgent',
+                       agn.Directory,
+                       'http://%s:%d/Register' % (dhostname, dport),
+                       'http://%s:%d/Stop' % (dhostname, dport))
 
 
 DirectoryAgent = Agent('DirectoryAgent',

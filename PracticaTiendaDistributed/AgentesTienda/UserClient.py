@@ -14,8 +14,7 @@ from multiprocessing import Process
 from flask import Flask, render_template, request
 from rdflib import Graph, Namespace, RDF, URIRef, Literal, XSD
 
-from PracticaTienda.utils.ACLMessages import send_message, build_message, get_agent_info
-from PracticaTienda.utils.Agent import Agent
+from PracticaTiendaDistributed.utils.ACLMessages import Agent,get_agent_info, get_message_properties, build_message, send_message
 from PracticaTienda.utils.FlaskServer import shutdown_server
 from PracticaTienda.utils.Logging import config_logger
 from PracticaTienda.utils.OntoNamespaces import ACL

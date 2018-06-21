@@ -20,11 +20,10 @@ import argparse
 from multiprocessing import Process, Queue
 import socket
 
-from rdflib import Namespace, Graph, logger, RDF, URIRef
+from rdflib import Namespace, Graph, logger, RDF
 from flask import Flask, request
 
-from PracticaTienda.utils.ACLMessages import register_agent, get_message_properties, build_message, get_agent_info, \
-    send_message
+from PracticaTienda.utils.ACLMessages import register_agent, get_message_properties, build_message
 from PracticaTienda.utils.FlaskServer import shutdown_server
 from PracticaTienda.utils.Agent import Agent
 from PracticaTienda.utils.OntoNamespaces import ACL
@@ -43,7 +42,7 @@ args = parser.parse_args()
 
 # Configuration stuff
 if args.port is None:
-    port = 9010
+    port = 9003
 else:
     port = args.port
 
@@ -62,6 +61,7 @@ if args.dhost is None:
 else:
     dhostname = args.dhost
 
+
 agn = Namespace("http://www.agentes.org#")
 
 # Contador de mensajes
@@ -69,16 +69,18 @@ messages_cnt = 0
 
 # Datos del Agente
 
-AgenteComprador = Agent('AgenteComprador',
-                        agn.AgenteComprador,
-                        'http://%s:%d/comm' % (hostname, port),
-                        'http://%s:%d/Stop' % (hostname, port))
+
+AgentePublicador = Agent('AgentePublicador',
+                       agn.AgentePublicador,
+                       'http://%s:%d/comm' % (hostname, port),
+                       'http://%s:%d/Stop' % (hostname, port))
 
 # Directory agent address
 DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
-                       'http://%s:9000/Register' % hostname,
-                       'http://%s:9000/Stop' % hostname)
+                       'http://%s:%d/Register' % (dhostname, dport),
+                       'http://%s:%d/Stop' % (dhostname, dport))
+
 
 # Global triplestore graph
 dsgraph = Graph()
@@ -88,20 +90,28 @@ cola1 = Queue()
 # Flask stuff
 app = Flask(__name__, template_folder='../templates')
 
-
-def get_n_message():
+def get_count():
     global messages_cnt
-    messages_cnt += messages_cnt
+    messages_cnt += 1
     return messages_cnt
 
-
 def register_message():
-    logger.info('Registrando Agente Comprador...')
-    gr = register_agent(AgenteComprador, DirectoryAgent, AgenteComprador.uri, get_n_message())
+    """
+    Envia un mensaje de registro al servicio de registro
+    usando una performativa Request y una accion Register del
+    servicio de directorio
+    :param gmess:
+    :return:
+    """
 
+    logger.info('Nos registramos')
+
+    gr = register_agent(AgentePublicador, DirectoryAgent, AgentePublicador.uri, get_count())
+    return gr
 
 @app.route("/comm")
 def comunicacion():
+
     global dsgraph
     global mss_cnt
     gr = None
@@ -117,35 +127,26 @@ def comunicacion():
     # Comprobacion del mensaje
 
     if msgdic is None:
-        gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteComprador.uri, msgcnt=get_n_message())
+        gr = build_message(Graph(), ACL['no_entendido'], sender=AgentePublicador.uri, msgcnt=get_count())
     else:
         performative = msgdic['performative']
 
         if performative != ACL.request:
-            gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteComprador.uri, msgcnt=get_n_message())
+            gr = build_message(Graph(), ACL['no_entendido'], sender=AgentePublicador.uri, msgcnt=get_count())
 
         else:
             content = msgdic['content']
             accion = gm.value(subject=content, predicate=RDF.type)
-            logger.info('Recibida una petición en AgenteComprador')
-            if accion == ECSDI.Peticion_compra:
-                logger.info('Recibida peticion compra')
-                compra = None
-                for item in gm.subjects(RDF.type, ECSDI.Compra):
-                    compra = item
 
-                gm.remove((content, None, None))
-                for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
-                    gm.remove((item, None, None))
+            # Aqui realizariamos lo que pide la accion
 
-                registerSells(gm)
-                payDelivery(compra)
-                logger.info('Envio la factura de la venda con id ' + compra + 'al usuario comprador.')
-                gr = sendSell(gm, compra)
+            if accion == ECSDI.Registrar_productos:
+                gr = recordExternalProduct(gm)
 
     logger.info('Respondemos a la peticion')
 
     return gr.serialize(format='xml'), 200
+
 
     pass
 
@@ -161,39 +162,23 @@ def stop():
     shutdown_server()
     return "Parando Servidor"
 
-
-def payDelivery(compra_url):
-    logger.info('Se acepta la transferencia de' + compra_url)
-
-
-def registerSells(gm):
-    ontologyFile = open('../Datos/Compras')
+def recordExternalProduct(gm):
+    ontologyFile = open('../Datos/productos')
 
     g = Graph()
     g.parse(ontologyFile, format='turtle')
-    g += gm
+
+    # Aquí afegim el producte al graf
+    producto = gm.subjects(RDF.type, ECSDI.Producto_externo)
+    producto = producto.next()
+
+    for s, p, o in gm:
+        if s == producto:
+            g.add((s, p, o))
 
     # Guardem el graf
-    g.serialize(destination='../Datos/Compras', format='turtle')
-    return g
-
-
-def sendSell(gm, sell):
-
-    logger.info('Nos comunicamos con el Centro Logistico')
-    content = ECSDI['Enviar_venta_' + str(get_n_message())]
-
-    gm.add((content, RDF.type, ECSDI.Enviar_venta))
-    gm.add((content, ECSDI.identificador_Compra, URIRef(sell)))
-
-    centro_logistico = get_agent_info(agn.AgenteCentroLogistico, DirectoryAgent, AgenteComprador, get_n_message())
-
-    gr = send_message(
-        build_message(gm, perf=ACL.request, sender=AgenteComprador.uri, receiver=centro_logistico.uri,
-                      msgcnt=get_n_message(),
-                      content=content), centro_logistico.address)
-    return gr
-    pass
+    g.serialize(destination='../Datos/productos', format='turtle')
+    return gm
 
 
 def tidyup():
@@ -225,3 +210,5 @@ if __name__ == '__main__':
     # Esperamos a que acaben los behaviors
     ab1.join()
     print('The End')
+
+

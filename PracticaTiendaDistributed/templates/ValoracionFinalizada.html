@@ -2,14 +2,13 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="https://cdn.icon-icons.com/icons2/67/PNG/512/shoppingcartfull_compras_carr_13340.png">
-    <title>ECSDIshop | Valoración de productos</title>
+<link rel="shortcut icon" href="https://cdn.icon-icons.com/icons2/67/PNG/512/shoppingcartfull_compras_carr_13340.png">
+    <title>ECSDIshop | Valoracion Finalizada</title>
 </head>
+
 <body>
-    <h1>Valorar Productos</h1>
+    <h1>Valoracion realizada con éxito, muchas gracias</h1>
     <br>
-    <a href="./">Volver</a>
-    <form method="post" style="padding-top: 15px">
     {% if products %}
     <table cellpadding="5px", border="2">
         <tr>
@@ -25,14 +24,11 @@
                     <td>{{ item.marca }}</td>
                     <td>{{ item.modelo }}</td>
                     <td>{{ item.precio }}</td>
-                    <td><input type="number" name="puntuacion" value="{{ 0 }}" min="0" max="10"></td>
-                    <td><input type="checkbox" name="checkbox" value="{{ products.index(item) }}"></td>
+                    <td>{{ item.puntuacion }}</td>
                 </tr>
             {% endfor %}
     </table>
-    <input type="submit" name="submit" value="Valorar">
     {% endif %}
-    </form>
-    <br>
+    <a href="./" style="padding-top: 20px">Volver</a>
 </body>
 </html>

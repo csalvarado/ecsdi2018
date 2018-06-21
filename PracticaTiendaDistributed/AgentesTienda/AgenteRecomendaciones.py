@@ -45,7 +45,7 @@ args = parser.parse_args()
 
 # Configuration stuff
 if args.port is None:
-    port = 9081
+    port = 9069
 else:
     port = args.port
 
@@ -72,22 +72,24 @@ messages_cnt = 0
 
 # Datos del Agente
 
-AgenteBuscador = Agent('Buscador',
-                       agn.AgenteBuscador,
+AgenteRecomendador = Agent('AgenteRecomendador',
+                       agn.AgenteRecomendador,
                        'http://%s:%d/comm' % (hostname, port),
                        'http://%s:%d/Stop' % (hostname, port))
 
 # Directory agent address
 DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
-                       'http://%s:9000/Register' % hostname,
-                       'http://%s:9000/Stop' % hostname)
+                       'http://%s:%d/Register' % (dhostname, dport),
+                       'http://%s:%d/Stop' % (dhostname, dport))
 
 
 # Global triplestore graph
 dsgraph = Graph()
 
 cola1 = Queue()
+
+
 
 # Flask stuff
 app = Flask(__name__, template_folder='../templates')
@@ -108,7 +110,7 @@ def register_message():
 
     logger.info('Nos registramos')
 
-    gr = register_agent(AgenteBuscador, DirectoryAgent, AgenteBuscador.uri, get_count())
+    gr = register_agent(AgenteRecomendador, DirectoryAgent, AgenteRecomendador.uri, get_count())
     return gr
 
 
@@ -117,7 +119,7 @@ def comunicacion():
     global dsgraph
     global mss_cnt
     gr =  None
-    logger.info('Peticion de info recibida')
+    logger.info ('Peticion de recomendacion recibida')
 
     # Extraemos el mensaje que nos envian
     mensaje = request.args['content']
@@ -129,42 +131,25 @@ def comunicacion():
     #Comprobacion del mensaje
 
     if msgdic is None:
-        gr = build_message(Graph(), ACL['no_entendido'],sender=AgenteBuscador.uri, msgcnt=get_count())
+        gr = build_message(Graph(), ACL['no_entendido'],sender=AgenteRecomendador.uri, msgcnt=get_count())
     else:
         performative = msgdic['performative']
 
         if performative != ACL.request:
-            gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteBuscador.uri, msgcnt=get_count())
+            gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteRecomendador.uri, msgcnt=get_count())
 
         else:
-
             content = msgdic['content']
             accion = gm.value(subject=content, predicate=RDF.type)
 
-            if accion == ECSDI.Peticion_Busqueda:
-                logger.info('Agente Buscador recibe una peticion de búsqueda, la tratamos')
-                restricciones = gm.objects(content, ECSDI.Restricciones)
-                restricciones_vec = {}
-                for restriccion in restricciones:
-                    if gm.value(subject=restriccion, predicate=RDF.type) == ECSDI.Restriccion_Marca:
-                        marca = gm.value(subject=restriccion, predicate=ECSDI.Marca)
-                        logger.info('MARCA: ' + marca)
-                        restricciones_vec['brand'] = marca
-                    elif gm.value(subject=restriccion, predicate=RDF.type) == ECSDI.Restriccion_modelo:
-                        modelo = gm.value(subject=restriccion, predicate=ECSDI.Modelo)
-                        logger. info('MODELO: ' + modelo)
-                        restricciones_vec['modelo'] = modelo
-                    elif gm.value(subject=restriccion, predicate=RDF.type) == ECSDI.Rango_precio:
-                        preu_max = gm.value(subject=restriccion, predicate=ECSDI.Precio_max)
-                        preu_min = gm.value(subject=restriccion, predicate=ECSDI.Precio_min)
-                        if preu_min:
-                            logger.info('Preu minim: ' + preu_min)
-                            restricciones_vec['min_price'] = preu_min.toPython()
-                        if preu_max:
-                            logger.info('Preu maxim: ' + preu_max)
-                            restricciones_vec['max_price'] = preu_max.toPython()
-
-                gr = findProducts(**restricciones_vec)
+            if accion == ECSDI.Peticion_Recomendados:
+                logger.info("Enviamos una serie de productos recomendados")
+                compras = get_all_sells()
+                if compras.__len__() == 0:
+                    gr = Graph()
+                    serialize = gr.serialize(format='xml')
+                    return serialize,200
+                gr = findRecProducts(compras)
 
                 logger.info('Respondemos a la peticion')
 
@@ -172,7 +157,7 @@ def comunicacion():
                 return serialize, 200
 
 
-def findProducts(modelo=None, brand=None, min_price=0.0, max_price=sys.float_info.max):
+def findRecProducts(compras):
     graph = Graph()
     ontologyFile = open('../Datos/productos')
     graph.parse(ontologyFile, format='turtle')
@@ -192,22 +177,22 @@ def findProducts(modelo=None, brand=None, min_price=0.0, max_price=sys.float_inf
             ?producto default:Precio ?precio .
             ?producto default:Peso ?peso .
             FILTER("""
+    bol = 0
+    pos = 0;
+    for row in compras:
+        for item in row[1]:
+            if bol == 1:
+                query += """ || """
+            if pos == 0:
+                query += """str(?marca) = '""" + item + """'"""
+                pos = 0
+            """elif pos == 1:
+                query += """#?precio <= '""" + item + """'"""
+                #pos = 0"""
 
-    if modelo is not None:
-        query += """str(?modelo) = '""" + modelo + """'"""
-        first = 1
+            bol = 1
+    query += """  )}"""
 
-    if brand is not None:
-        if first == 1:
-            query += """ && """
-        query += """str(?marca) = '""" + brand + """'"""
-        second = 1
-
-    if first == 1 or second == 1:
-        query += """ && """
-    query += """?precio >= """ + str(min_price) + """ &&
-                ?precio <= """ + str(max_price) + """  )}
-                order by asc(UCASE(str(?nombre)))"""
 
     graph_query = graph.query(query)
     result = Graph()
@@ -231,8 +216,22 @@ def findProducts(modelo=None, brand=None, min_price=0.0, max_price=sys.float_inf
     return result
 
 
+def get_all_sells():
+    # [0] = url / [1] = [{producte}] / [2] = precio_total
+    global compras
+    compras = []
+    graph_compres = Graph()
+    graph_compres.parse(open('../Datos/Compras'), format='turtle')
 
-
+    for compraUrl in graph_compres.subjects(RDF.type, ECSDI.Compra):
+        single_sell = [compraUrl]
+        products = []
+        for productUrl in graph_compres.objects(subject=compraUrl, predicate=ECSDI.Productos):
+            products.append(graph_compres.value(subject=productUrl, predicate=ECSDI.Marca))
+            #products.append(graph_compres.value(subject=productUrl, predicate=ECSDI.Precio))
+        single_sell.append(products)
+        compras.append(single_sell)
+    return compras
 
 @app.route("/Stop")
 def stop():
@@ -273,5 +272,3 @@ if __name__ == '__main__':
     # Esperamos a que acaben los behaviors
     ab1.join()
     print('The End')
-
-

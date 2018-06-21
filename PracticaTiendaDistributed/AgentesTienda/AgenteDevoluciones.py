@@ -23,8 +23,8 @@ import socket
 from rdflib import Namespace, Graph, logger, RDF, URIRef
 from flask import Flask, request
 
-from PracticaTienda.utils.ACLMessages import register_agent, get_message_properties, build_message, get_agent_info, \
-    send_message
+from PracticaTienda.utils.ACLMessages import build_message, get_message_properties, get_agent_info, send_message, \
+    register_agent
 from PracticaTienda.utils.FlaskServer import shutdown_server
 from PracticaTienda.utils.Agent import Agent
 from PracticaTienda.utils.OntoNamespaces import ACL
@@ -42,8 +42,9 @@ parser.add_argument('--dport', type=int, help="Puerto de comunicacion del agente
 args = parser.parse_args()
 
 # Configuration stuff
+
 if args.port is None:
-    port = 9010
+    port = 9050
 else:
     port = args.port
 
@@ -61,6 +62,8 @@ if args.dhost is None:
     dhostname = socket.gethostname()
 else:
     dhostname = args.dhost
+hostname = socket.gethostname()
+port = 9050
 
 agn = Namespace("http://www.agentes.org#")
 
@@ -69,16 +72,16 @@ messages_cnt = 0
 
 # Datos del Agente
 
-AgenteComprador = Agent('AgenteComprador',
-                        agn.AgenteComprador,
-                        'http://%s:%d/comm' % (hostname, port),
-                        'http://%s:%d/Stop' % (hostname, port))
+AgenteDevoluciones = Agent('AgenteDevoluciones',
+                           agn.AgenteDevoluciones,
+                           'http://%s:%d/comm' % (hostname, port),
+                           'http://%s:%d/Stop' % (hostname, port))
 
 # Directory agent address
 DirectoryAgent = Agent('DirectoryAgent',
                        agn.Directory,
-                       'http://%s:9000/Register' % hostname,
-                       'http://%s:9000/Stop' % hostname)
+                       'http://%s:%d/Register' % (dhostname, dport),
+                       'http://%s:%d/Stop' % (dhostname, dport))
 
 # Global triplestore graph
 dsgraph = Graph()
@@ -89,15 +92,14 @@ cola1 = Queue()
 app = Flask(__name__, template_folder='../templates')
 
 
-def get_n_message():
+def get_count():
     global messages_cnt
-    messages_cnt += messages_cnt
+    messages_cnt += 1
     return messages_cnt
 
-
-def register_message():
-    logger.info('Registrando Agente Comprador...')
-    gr = register_agent(AgenteComprador, DirectoryAgent, AgenteComprador.uri, get_n_message())
+def register():
+    gr = register_agent(AgenteDevoluciones, DirectoryAgent, AgenteDevoluciones.uri, get_count())
+    pass
 
 
 @app.route("/comm")
@@ -117,37 +119,44 @@ def comunicacion():
     # Comprobacion del mensaje
 
     if msgdic is None:
-        gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteComprador.uri, msgcnt=get_n_message())
+        gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteDevoluciones.uri, msgcnt=get_count())
     else:
         performative = msgdic['performative']
 
         if performative != ACL.request:
-            gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteComprador.uri, msgcnt=get_n_message())
+            gr = build_message(Graph(), ACL['no_entendido'], sender=AgenteDevoluciones.uri, msgcnt=get_count())
 
         else:
+
             content = msgdic['content']
             accion = gm.value(subject=content, predicate=RDF.type)
-            logger.info('Recibida una petición en AgenteComprador')
-            if accion == ECSDI.Peticion_compra:
-                logger.info('Recibida peticion compra')
-                compra = None
-                for item in gm.subjects(RDF.type, ECSDI.Compra):
-                    compra = item
+            # peticion de devolucion
+            if accion == ECSDI.Peticion_retorno:
+                logger.info("Recibida una peticion de retorno en AgenteDevoluciones")
 
-                gm.remove((content, None, None))
                 for item in gm.subjects(RDF.type, ACL.FipaAclMessage):
                     gm.remove((item, None, None))
 
-                registerSells(gm)
-                payDelivery(compra)
-                logger.info('Envio la factura de la venda con id ' + compra + 'al usuario comprador.')
-                gr = sendSell(gm, compra)
+                venta = []
+                for item in gm.objects(subject=content, predicate=ECSDI.CompraRetornada):
+                    venta.append(item)
+
+                payDelivery()
+
+                gm.remove((content, None, None))
+                gr = returnSell(gm, venta)
+
+
+            else:
+                gr = build_message(Graph(),
+                                   ACL['not-understood'],
+                                   sender=DirectoryAgent.uri,
+                                   msgcnt=get_count())
 
     logger.info('Respondemos a la peticion')
 
-    return gr.serialize(format='xml'), 200
-
-    pass
+    serialize = gr.serialize(format='xml')
+    return serialize, 200
 
 
 @app.route("/Stop")
@@ -162,38 +171,25 @@ def stop():
     return "Parando Servidor"
 
 
-def payDelivery(compra_url):
-    logger.info('Se acepta la transferencia de' + compra_url)
+def payDelivery():
+    logger.info('Transferencia aceptada')
+    pass
 
 
-def registerSells(gm):
-    ontologyFile = open('../Datos/Compras')
+def returnSell(gm, sell):
+    content = ECSDI['Recoger_devolucion_' + str(get_count())]
 
-    g = Graph()
-    g.parse(ontologyFile, format='turtle')
-    g += gm
+    gm.add((content, RDF.type, ECSDI.Recoger_devolucion))
+    for item in sell:
+        gm.add((content, ECSDI.compra_a_devolver, URIRef(item)))
 
-    # Guardem el graf
-    g.serialize(destination='../Datos/Compras', format='turtle')
-    return g
-
-
-def sendSell(gm, sell):
-
-    logger.info('Nos comunicamos con el Centro Logistico')
-    content = ECSDI['Enviar_venta_' + str(get_n_message())]
-
-    gm.add((content, RDF.type, ECSDI.Enviar_venta))
-    gm.add((content, ECSDI.identificador_Compra, URIRef(sell)))
-
-    centro_logistico = get_agent_info(agn.AgenteCentroLogistico, DirectoryAgent, AgenteComprador, get_n_message())
+    logistic = get_agent_info(agn.AgenteCentroLogistico, DirectoryAgent, AgenteDevoluciones, get_count())
 
     gr = send_message(
-        build_message(gm, perf=ACL.request, sender=AgenteComprador.uri, receiver=centro_logistico.uri,
-                      msgcnt=get_n_message(),
-                      content=content), centro_logistico.address)
+        build_message(gm, perf=ACL.request, sender=AgenteDevoluciones.uri, receiver=logistic.uri,
+                      msgcnt=get_count(),
+                      content=content), logistic.address)
     return gr
-    pass
 
 
 def tidyup():
@@ -210,7 +206,7 @@ def agentbehavior1():
 
     :return:
     """
-    register_message()
+    gr = register()
     pass
 
 
